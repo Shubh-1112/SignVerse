@@ -420,12 +420,9 @@ ollama serve
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Team
+## 👥 Devloper's Info
 
-- **[Shubh Saurabh](https://github.com/shubh-saurabh)** - Full Stack Developer & AI/ML Engineer
-- **[Dishita Gupta](https://github.com/dishita-g)** - Frontend Developer & UI/UX Designer
-- **[Kashish Goyal](https://github.com/kashish-goyal)** - Backend Developer & Database Architect
-
+- **[Shubham Dey](https://github.com/shubh-1112)** 
 ## 🙏 Acknowledgments
 
 - **Ultralytics** for YOLOv8 model
