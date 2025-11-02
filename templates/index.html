@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignVerse</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <link rel="stylesheet" href="/static/styles/components.css">
+    <link rel="stylesheet" href="/static/styles/chatbot.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Story+Script&family=Grenze+Gotisch&family=Train+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h2 class="loading-text">Loading...</h2>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress">
+        <div class="progress-fill"></div>
+    </div>
+
+    <!-- Particle Background -->
+    <!-- <canvas id="particle-canvas" class="particle-canvas"></canvas> -->
+
+    <!-- Navigation -->
+    <nav class="navbar glassmorphism" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" style="display:flex; align-items:center;">
+                <a href="#home" style="text-decoration:none; color:inherit; display:flex; align-items:center;">
+                    <div class="thunderbolt-logo" style="margin-right: 8px;">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h1 style="margin:0;">SignVerse</h1>
+                </a>
+            </div>
+
+            <div class="nav-actions">
+                <div class="profile-toggle" id="profile-toggle">
+                    <i class="fas fa-user-circle"></i>
+                    <!-- Profile Slider -->
+<div class="profile-slider" id="profile-slider">
+    <div class="slider-content">
+        <a href="/profile" class="slider-link">Profile Detail</a>
+        <a href="/verify_edit" class="slider-link">Edit Profile</a>
+<a href="#" id="logout-button" class="slider-link">Logout</a>
+    </div>
+</div>
+                </div>
+                <div class="nav-toggle" id="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <!-- Menu Slider -->
+            <div class="menu-slider" id="menu-slider">
+                <div class="menu-content">
+<div class="menu-row">
+    <a href="/real_time_translation" class="menu-link">
+        <i class="fas fa-hands"></i>
+        <span>Real Time Translation</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/learning-hub" class="menu-link">
+        <i class="fas fa-graduation-cap"></i>
+        <span>Interactive Learning</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/video" class="menu-link">
+                                    <i class="fas fa-video"></i>
+        <span>Video Conferencing</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/chat" class="menu-link">
+        <i class="fas fa-message"></i>
+        <span>Chat</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/view_feedback" class="menu-link">
+                                    <i class="fas fa-comments"></i>
+        <span>Feedback</span>
+    </a>
+</div>
+
+<div class="menu-row">
+    <a href="/about" class="menu-link">
+                                    <i class="fas fa-info-circle"></i>
+        <span>About Us</span>
+    </a>
+</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title scroll-animate">
+                    <span class="gradient-text">SignVerse <br></span><span class="story-text">Where Silence Speaks, and<br>Voices Connect</span>
+                </h1>
+                <p class="hero-description scroll-animate">
+                   SignVerse is more than just a platform — it’s a bridge. With cutting-edge technology and a human touch, we bring people together through real-time video calls, seamless text-to-sign, and sign-to-text translation.
+                </p>
+                <div class="hero-buttons scroll-animate">
+                    <button class="btn btn-primary" onclick="handleGetStarted()">
+                        Get Started
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="hero-visual">
+                    <div class="floating-cards scroll-animate">
+                        <div class="card card-1">
+                            <i class="fas fa-rocket"></i>
+                            <h3>Fast Performance</h3>
+                        </div>
+                        <div class="card card-2">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Secure & Reliable</h3>
+                        </div>
+                        <div class="card card-3">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h3>Mobile First</h3>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <spline-viewer url="https://prod.spline.design/Kv4xyfkjD6tSJKf3/scene.splinecode"></spline-viewer>
+            </div>
+    </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Features</span>
+                    <h2 class="section-title scroll-animate">Where Hands Speak, and Hearts Connect.</h2>
+                    <p class="section-description scroll-animate">
+                       Built especially for the deaf and hard-of-hearing community, it ensures conversations are not just understood but felt, making communication inclusive, interactive, and empowering.
+                    </p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="0" style="cursor:pointer;" onclick="window.location.href='/real_time_translation'">
+                            <div class="feature-icon">
+                                <i class="fas fa-hands"></i>
+                            </div>
+                            <h3>Real-time Translation</h3>
+                            <p>Seamless sign-to-text and text-to-sign translation powered by advanced AI for instant communication.</p>
+                        </div>
+                    <div class="feature-card gamified-card" data-aos="fade-up" data-aos-delay="100" style="cursor:pointer;" onclick="window.location.href='/learning-hub'">
+                            <div class="card-header" style="justify-content: center;">
+                                <div class="level-badge">*New Lessons</div>
+                            </div>
+                            <div class="feature-icon">
+                                <i class="fas fa-brain interactive-learning-icon"></i>
+                            </div>
+                            <h3>Interactive Learning</h3>
+                            <p>Structured sign language lessons with progress tracking. Learn alphabets and numbers step by step.</p>
+                            <div class="xp-bar">
+                                <div class="xp-fill"></div>
+                            </div>
+                            <div class="achievements" style="justify-content:center;">
+                                <div class="achievement-star"></div>
+                                <div class="achievement-star"></div>
+                                <div class="achievement-star"></div>
+                            </div>
+                        </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200" style="cursor:pointer;" onclick="window.location.href='/video'">
+                            <div class="feature-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h3>Video Conferencing</h3>
+                            <p>Live video calls with real-time sign language translation, breaking communication barriers instantly.</p>
+                        </div>
+            </div>
+        </section>
+
+        <!-- Why Trust Us Section -->
+        <section id="why-trust-us" class="why-trust-us-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title scroll-animate">Why Trust Us??</h2>
+                    <p class="section-description scroll-animate">
+                        At SignVerse, we’re not just building another communication tool — we’re creating an inclusive bridge between the deaf and hearing communities. Our platform is built with cutting-edge AI models, real-time text-to-sign and sign-to-text conversion, and a deep focus on Indian Sign Language, ensuring accuracy and cultural relevance.
+                    </p>
+                    <p class="scroll-animate">We combine technology with empathy:</p>
+                </div>
+                <div class="trust-cards-grid">
+                    <div class="trust-card">
+                        <p>Real-time video calling with live sign translation – breaking communication barriers instantly.</p>
+                    </div>
+                    <div class="trust-card">
+                        <p>Gamified sign language learning – making learning fun, engaging, and accessible to all.</p>
+                    </div>
+                    <div class="trust-card">
+                        <p>Built for inclusivity – designed to empower the deaf community while educating the hearing world.</p>
+                    </div>
+                    <div class="trust-card">
+                        <p>Continuous innovation – our models evolve with feedback from real users and sign language experts.</p>
+                    </div>
+                </div>
+                <p>
+                    With SignVerse, you’re not just using a product — you’re joining a movement for accessibility, connection, and equality.
+                </p>
+            </div>
+        </section>
+
+
+
+
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-description">
+                    Got questions? We've got answers. Check out our most frequently asked questions below.
+                </p>
+            </div>
+                <div class="faq-list">
+                    <div class="faq-item" data-aos="fade-up">
+                        <div class="faq-question" tabindex="0" role="button" aria-expanded="false" aria-controls="faq1-answer" id="faq1-question">
+                            <h3>What makes SignVerse different from other platforms?</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="faq-answer" id="faq1-answer" role="region" aria-labelledby="faq1-question">
+                            <p>Unlike regular video calling apps, SignVerse is built with accessibility first. It offers ISL-focused translation, gamified learning, emotional design, and inclusivity-driven features that connect people beyond just words.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="faq-question" tabindex="0" role="button" aria-expanded="false" aria-controls="faq2-answer" id="faq2-question">
+                            <h3>Is SignVerse free, or do I need a subscription?</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="faq-answer" id="faq2-answer" role="region" aria-labelledby="faq2-question">
+                            <p>SignVerse is free for everyone. Our goal is to help people learn, communicate, and connect with the deaf and hard-of-hearing community without barriers. We believe accessibility and understanding should never come with a price tag.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="faq-question" tabindex="0" role="button" aria-expanded="false" aria-controls="faq3-answer" id="faq3-question">
+                            <h3>How secure is my data?</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="faq-answer" id="faq3-answer" role="region" aria-labelledby="faq3-question">
+                            <p>Your privacy is our top priority. All conversations and translations on SignVerse are protected with end-to-end encryption, meaning only you and the person you’re talking to can access them. We never store your video calls, and any text or sign data used for translation stays secure and confidential.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
+                        <div class="faq-question" tabindex="0" role="button" aria-expanded="false" aria-controls="faq4-answer" id="faq4-question">
+                            <h3>Can I practice signs even if I don’t have anyone to talk to right now?</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="faq-answer" id="faq4-answer" role="region" aria-labelledby="faq4-question">
+                            <p>Yes! The solo practice mode lets you play interactive games, quizzes, and challenges so you can learn ISL anytime, anywhere — no partner required.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item" data-aos="fade-up" data-aos-delay="400">
+                        <div class="faq-question" tabindex="0" role="button" aria-expanded="false" aria-controls="faq5-answer" id="faq5-question">
+                            <h3>Do you provide customer support?</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="faq-answer" id="faq5-answer" role="region" aria-labelledby="faq5-question">
+                            <p>Yes, we provide 24/7 customer support through various channels including live chat, email, and phone. Our support team is always ready to help you.</p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content scroll-animate">
+                <div class="footer-section">
+                    <h3>SignVerse</h3>
+                    <p>Bridging silence with technology, we work to make conversations limitless.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SignVerse. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot Toggle Button -->
+    <button class="chatbot-toggle hidden" id="chatbot-toggle" aria-label="Open AI Chatbot">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- AI Chatbot Modal -->
+    <div class="chatbot-modal" id="chatbot-modal">
+        <!-- Resize handles -->
+        <div class="top-resize"></div>
+        <div class="bottom-resize"></div>
+        <div class="left-resize"></div>
+        <div class="right-resize"></div>
+        <div class="top-left-resize"></div>
+        <div class="top-right-resize"></div>
+        <div class="bottom-left-resize"></div>
+        <div class="bottom-right-resize"></div>
+
+        <div class="chatbot-container">
+            <div class="chatbot-header">
+                <h3>Sign Setu</h3>
+                <button class="chatbot-close" id="chatbot-close" aria-label="Close chatbot">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chatbot-body" id="chatbot-body">
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm Sign Setu your Personal Assistant. How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chatbot-input-area">
+                    <input type="text" id="chatbot-input" placeholder="Type your message..." />
+                    <button id="chatbot-send" aria-label="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/particles.js"></script>
+    <script src="/static/js/animations.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Fix for hideSplineWatermark not defined error
+        function hideSplineWatermark() {
+            // No operation - placeholder to prevent errors
+        }
+
+        // Handle Get Started button click with conditional redirect
+        async function handleGetStarted() {
+            try {
+                const response = await fetch('/api/login-status');
+                const data = await response.json();
+
+                if (data.logged_in) {
+                    // User is logged in, scroll to features section
+                    document.getElementById('features').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else {
+                    // User is not logged in, redirect to login
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                // Fallback to login page if there's an error
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

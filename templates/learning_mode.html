@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISL Learning Hub</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <a href="/" class="go-back-btn">← Back to Home</a>
+        </div>
+        <div class="nav-right">
+            <button id="settings-toggle" class="settings-btn" title="Settings">
+                <span class="settings-icon">⚙️</span>
+                Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar" id="settings-sidebar">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button id="settings-close" class="settings-close-btn">✕</button>
+        </div>
+        <div class="settings-content">
+            <div class="setting-group">
+                <h4>Theme</h4>
+                <button id="theme-toggle" class="setting-button">🌙 Dark Mode</button>
+            </div>
+            <div class="setting-group">
+                <h4>Undertone Color</h4>
+                <div class="undertone-controls">
+                    <input type="color" id="undertone-picker" value="#667eea">
+                    <span class="undertone-chip" id="undertone-hex">#667eea</span>
+                    <button id="undertone-palette" class="palette-btn" title="Undertone palette">
+                        <span class="swatch base" aria-hidden="true"></span>
+                        <span class="swatch a" aria-hidden="true"></span>
+                        <span class="swatch b" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settings-overlay" hidden></div>
+
+    <header>
+        <h1 class="lesson-heading">Indian Sign Language - Learning Hub</h1>
+    </header>
+
+    <main>
+        <!-- Starfield for dark mode -->
+        <div class="starfield" aria-hidden="true"></div>
+        <div class="star-sparkles" id="star-sparkles" aria-hidden="true"></div>
+        <!-- Aurora ribbons behind content -->
+        <div class="aurora-layer" aria-hidden="true">
+            <div class="aurora aurora-a"></div>
+            <div class="aurora aurora-b"></div>
+        </div>
+        <!-- Parallax glow shapes -->
+        <div class="parallax-layer" aria-hidden="true">
+            <div class="parallax-glow glow-a"></div>
+            <div class="parallax-glow glow-b"></div>
+        </div>
+        <!-- Noise overlay for subtle texture -->
+        <div class="noise-overlay" aria-hidden="true"></div>
+        <!-- Comet container -->
+        <div class="comet-layer" aria-hidden="true"></div>
+        <!-- Glass panel wrapper and particle canvas -->
+        <section class="levels-section">
+            <canvas id="particle-canvas" aria-hidden="true"></canvas>
+            <div class="glass-panel">
+                <div class="panel-stars" id="panel-stars" aria-hidden="true"><div class="panel-stars-inner" id="panel-stars-inner"></div></div>
+                <div class="levels-grid">
+                <!-- 3 Lessons -->
+                <div class="level unlocked" data-level="1" onclick="handleLevelClick(1)">
+                    <div class="level-number">1</div>
+                    <div class="level-title">Lesson 1</div>
+                    <div class="completion-sticker" aria-hidden="true">✓</div>
+                </div>
+                <div class="level locked" data-level="2" onclick="handleLevelClick(2)">
+                    <div class="level-number">2</div>
+                    <div class="level-title">Lesson 2</div>
+                    <div class="completion-sticker" aria-hidden="true">✓</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="level locked" data-level="3" onclick="handleLevelClick(3)">
+                    <div class="level-number">3</div>
+                    <div class="level-title">Lesson 3</div>
+                    <div class="completion-sticker" aria-hidden="true">✓</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <!-- 1 Test -->
+                <div class="level test locked" data-level="4" onclick="handleLevelClick(4)">
+                    <div class="level-number">4</div>
+                    <div class="level-title">Test 1</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <!-- 1 More Lesson -->
+                <div class="level locked" data-level="5" onclick="handleLevelClick(5)">
+                    <div class="level-number">5</div>
+                    <div class="level-title">Lesson 4</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <!-- Final Lesson -->
+                <div class="level locked" data-level="6" onclick="handleLevelClick(6)">
+                    <div class="level-number">6</div>
+                    <div class="level-title">Lesson 5</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Centered UI modal -->
+    <div class="ui-modal-overlay" id="ui-modal" hidden>
+        <div class="ui-modal">
+            <div class="ui-modal-title" id="ui-modal-title">Notice</div>
+            <div class="ui-modal-msg" id="ui-modal-msg">This item is locked. Complete the previous ones first.</div>
+            <div class="ui-modal-actions">
+                <button class="ui-modal-btn" id="ui-modal-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/lesson-script.js?v=2025012603"></script>
+</body>
+</html>

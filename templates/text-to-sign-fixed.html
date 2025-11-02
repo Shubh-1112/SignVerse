@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Text to Sign Language</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light Mode Colors - Modern & Stylish */
+            --bg-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+            --bg-secondary: #fafbfc;
+            --bg-card: rgba(255, 255, 255, 0.98);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --accent-primary: #4f46e5;
+            --accent-secondary: #ec4899;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --shadow: 0 20px 40px rgba(79, 70, 229, 0.1);
+            --shadow-hover: 0 25px 50px rgba(79, 70, 229, 0.15);
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Colors */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --bg-secondary: #1e1e1e;
+            --bg-card: rgba(30, 30, 30, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #ff6b9d;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(79, 70, 229, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(124, 58, 237, 0.3) 0%, transparent 50%);
+            animation: backgroundShift 8s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.1) rotate(180deg);
+                opacity: 0.9;
+            }
+        }
+
+        [data-theme="dark"] body::before {
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 157, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1700px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            color: whitesmoke;
+            margin-bottom: 20px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        /* Light mode text visibility fix */
+        [data-theme="light"] .header {
+            color: #0f172a;
+        }
+
+        [data-theme="light"] .header h1 {
+            background: linear-gradient(45deg, #8748ec, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        [data-theme="light"] .header p {
+            color: azure;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Controls Bar */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: whitesmoke;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        /* Image Frame */
+        .image-frame {
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        .frame-header {
+            padding: 25px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .frame-header h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 82, 82, 0.3);
+        }
+
+        .image-display {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            align-content: flex-start;
+            scroll-behavior: smooth;
+        }
+
+        .image-display.empty {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .empty-state .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: var(--accent-primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Character Cards */
+        .character-wrapper {
+            width: clamp(120px, 12vw, 200px);
+            height: clamp(120px, 12vw, 200px);
+            perspective: 1000px;
+            transition: transform 0.3s ease;
+        }
+
+        .character-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .character-wrapper:hover .character-inner {
+            transform: rotateY(180deg);
+        }
+
+        .character-front, .character-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+        }
+
+        .character-front img {
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .character-front:hover img {
+            transform: scale(1.05);
+        }
+
+        .character-front.space-front {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+        }
+
+        .character-back {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            transform: rotateY(180deg);
+            box-shadow: var(--shadow);
+        }
+
+        /* Input Section */
+        .input-section {
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        .chat-input-bar {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-bar:focus-within {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .chat-input-bar textarea {
+            flex: 1;
+            border: none;
+            font-size: 1.1rem;
+            padding: 15px;
+            background: transparent;
+            outline: none;
+            color: var(--text-primary);
+            resize: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        .chat-input-bar textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+        }
+
+        .control-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        .control-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: modalZoomIn 0.3s ease;
+            object-fit: contain;
+        }
+
+        @keyframes modalZoomIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--accent-primary);
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .zoom-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .chat-input-bar {
+                max-width: 100%;
+                padding: 12px 20px;
+            }
+
+            .input-controls {
+                gap: 8px;
+            }
+
+            .control-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+
+            .character-wrapper {
+                width: clamp(100px, 15vw, 150px);
+                height: clamp(100px, 15vw, 150px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .frame-header {
+                padding: 20px;
+            }
+
+            .image-display {
+                padding: 20px;
+            }
+
+            .character-wrapper {
+                width: clamp(80px, 18vw, 120px);
+                height: clamp(80px, 18vw, 120px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-hands"></i> Text to Sign Language</h1>
+            <p>Transform your text into visual sign language characters with interactive animations</p>
+        </div>
+
+        <div class="controls-bar">
+            <a href="/real_time_translation" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Translation
+            </a>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span id="themeText">Dark Mode</span>
+            </button>
+        </div>
+
+        <div class="image-frame">
+            <div class="frame-header">
+                <h2><i class="fas fa-images"></i> Sign Language Characters</h2>
+                <button class="clear-btn" id="clearBtn" style="display: none;">
+                    <i class="fas fa-trash"></i>
+                    Clear All
+                </button>
+            </div>
+            <div class="image-display empty" id="imageDisplay">
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-keyboard"></i></div>
+                    <h3>Ready to Convert</h3>
+                    <p>Enter text below to see sign language characters appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <form id="textForm" class="chat-input-bar" autocomplete="off">
+                <textarea
+                    id="textInput"
+                    placeholder="Type your message here (e.g., 'Hello World 123')..."
+                    autocomplete="off"
+                    rows="2"
+                ></textarea>
+                <div class="input-controls">
+                    <button type="button" class="control-btn" id="micBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="submit" class="control-btn primary" id="sendBtn" title="Convert to Sign Language">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoomIn">+</button>
+            <button class="zoom-btn" id="zoomOut">-</button>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const body = document.body;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        // Form and Input Management
+        const textForm = document.getElementById('textForm');
+        const textInput = document.getElementById('textInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const micBtn = document.getElementById('micBtn');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const clearBtn = document.getElementById('clearBtn');
+        let isLoading = false;
+
+        textForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let inputText = textInput.value.trim();
+
+            if (!inputText || isLoading) return;
+
+            setLoading(true);
+            try {
+                displayImagesFromText(inputText);
+            } catch (error) {
+                console.error('Error displaying images:', error);
+                showNotification('Error displaying images. Please try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            clearImages();
+            textInput.value = '';
+            textInput.focus();
+        });
+
+        function setLoading(loading) {
+            isLoading = loading;
+            sendBtn.disabled = loading;
+            textInput.disabled = loading;
+            micBtn.disabled = loading;
+
+            if (loading) {
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            } else {
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? 'linear-gradient(135deg, #ff6b6b, #ff5252)' : 'linear-gradient(135deg, #4f46e5, #ec4899)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+                z-index: 3000;
+                animation: slideInRight 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function displayImagesFromText(inputText) {
+            if (!inputText || inputText.length === 0) {
+                clearImages();
+                return;
+            }
+
+            imageDisplay.classList.remove('empty');
+            imageDisplay.innerHTML = '';
+            clearBtn.style.display = 'block';
+
+            for (let i = 0; i < inputText.length; i++) {
+                const char = inputText[i];
+                const upperChar = char.toUpperCase();
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'character-wrapper';
+
+                const inner = document.createElement('div');
+                inner.className = 'character-inner';
+
+                const front = document.createElement('div');
+                front.className = 'character-front';
+
+                const back = document.createElement('div');
+                back.className = 'character-back';
+
+                if (char === ' ') {
+                    front.classList.add('space-front');
+                    back.textContent = '';
+                } else if (['.', ',', '?'].includes(char)) {
+                    front.classList.add('space-front');
+                    back.textContent = char;
+                } else {
+                    const img = document.createElement('img');
+                    const imgName = encodeURIComponent(upperChar) + '.jpeg';
+                    img.src = `/static/images/${imgName}`;
+                    img.alt = `Sign language character ${upperChar}`;
+
+                    img.onerror = function() {
+                        // Fallback for missing images
+                        front.classList.add('space-front');
+                        back.textContent = upperChar;
+                    };
+
+                    wrapper.addEventListener('click', () => {
+                        if (img && img.src && !img.src.includes('data:image')) {
+                            openModal(img.src);
+                        }
+                    });
+
+                    front.appendChild(img);
+                    back.textContent = upperChar;
+                }
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                wrapper.appendChild(inner);
+                imageDisplay.appendChild(wrapper);
+            }
+        }
+
+        function clearImages() {
+            imageDisplay.classList.add('empty');
+            imageDisplay.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-keyboard"></i></div>
+                    <h3>Ready to Convert</h3>
+                    <p>Enter text below to see sign language characters appear here</p>
+                </div>
+            `;
+            clearBtn.style.display = 'none';
+        }
+
+        // Voice Recognition
+        let recognition;
+        let listening = false;
+
+        micBtn.addEventListener('click', () => {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Speech recognition is not supported in your browser. Please use Chrome or Edge.', 'error');
+                return;
+            }
+
+            if (!recognition) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onstart = function () {
+                    listening = true;
+                    micBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                    micBtn.style.background = 'linear-gradient(135deg, #ff6b6b, #ff5252)';
+                    showNotification('Listening...', 'info');
+                };
+
+                recognition.onresult = function(event) {
+                    let finalTranscript = "";
+                    let interimTranscript = "";
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + " ";
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    textInput.value = finalTranscript + interimTranscript;
+                };
+
+                recognition.onerror = function (event) {
+                    console.error("Speech recognition error:", event.error);
+                    showNotification('Voice recognition error: ' + event.error, 'error');
+                    stopListening();
+                };
+
+                recognition.onend = function () {
+                    listening = false;
+                    micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    micBtn.style.background = '';
+                };
+            }
+
+            if (!listening) {
+                recognition.start();
+            } else {
+                recognition.stop();
+            }
+        });
+
+        function stopListening() {
+            if (recognition && listening) {
+                recognition.stop();
+                listening = false;
+            }
+        }
+
+        // Modal functionality
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImg");
+        const closeModal = document.querySelector(".close");
+
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0, translateY = 0;
+
+        function resetZoom() {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            modalImg.style.transform = `translate(0px, 0px) scale(1)`;
+        }
+
+        document.getElementById("zoomIn").addEventListener("click", () => {
+            scale = Math.min(5, scale + 0.2);
+            modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        });
+
+        document.getElementById("zoomOut").addEventListener("click", () => {
+            scale = Math.max(1, scale - 0.2);
+            modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        });
+
+        modalImg.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            scale += e.deltaY * -0.001;
+            scale = Math.min(Math.max(1, scale), 5);
+            modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        });
+
+        modalImg.addEventListener("mousedown", (e) => {
+            if (scale <= 1) return;
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            modalImg.style.cursor = "grabbing";
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+            modalImg.style.cursor = "grab";
+        });
+
+        function openModal(src) {
+            modal.style.display = "flex";
+            modalImg.src = src;
+            resetZoom();
+            document.body.style.overflow = "hidden";
+        }
+
+        closeModal.onclick = function() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        }
+
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                modal.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        });
+
+        // Auto-focus input on page load
+        textInput.focus();
+
+        // Add smooth scrolling for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

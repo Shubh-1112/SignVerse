@@ -1,0 +1,123 @@
+/* Fixed styles for real_time_translation page layout */
+
+.translation-section {
+    padding-top: 90px; /* Offset for fixed navbar height */
+    padding-bottom: 60px;
+    min-height: 60vh; /* Ensure minimum height */
+    display: block !important; /* Force visibility */
+    visibility: visible;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.translation-cards {
+    display: flex !important;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    visibility: visible;
+    opacity: 1;
+    margin-top: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.translation-card {
+    background: rgba(0, 0, 0, 0.95) !important;
+    border: 2px solid rgba(212, 175, 55, 0.8);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    color: #f5f5f5;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    flex: 1 1 300px;
+    max-width: 350px;
+    min-width: 300px;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    visibility: visible;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+    min-height: 300px;
+}
+
+.translation-card:hover {
+    transform: translateY(-10px);
+    background: rgba(26, 26, 26, 1);
+    border-color: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.2);
+}
+
+.translation-card .card-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    color: #d4af37;
+    opacity: 0.8;
+    display: block;
+}
+
+.translation-card h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #f5f5f5;
+    display: block;
+}
+
+.translation-card p {
+    font-size: 16px;
+    color: #c7c7c7;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.translation-card .btn {
+    display: inline-flex !important;
+    visibility: visible;
+    opacity: 1;
+    margin-top: auto;
+}
+
+/* Ensure cards are visible even without AOS */
+.translation-card[data-aos] {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .translation-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .translation-card {
+        width: 100%;
+        max-width: 400px;
+        min-width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .translation-card {
+        padding: 20px;
+        min-height: 250px;
+    }
+
+    .translation-card .card-icon {
+        font-size: 32px;
+    }
+
+    .translation-card h3 {
+        font-size: 18px;
+    }
+
+    .translation-card p {
+        font-size: 14px;
+    }
+}

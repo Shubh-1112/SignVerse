@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta name="robots" content="noindex">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+    <!-- NOTE: Videos for NUMBER 0-9 can be added later; viewer and tabs are wired -->
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <a href="{{ url_for('learning_hub') }}" class="go-back-btn" title="Go back to Learning Hub">← Back to Hub</a>
+        </div>
+        <div class="nav-right">
+            <button id="settings-toggle" class="settings-btn" title="Settings">
+                <span class="settings-icon">⚙️</span>
+                Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar" id="settings-sidebar">
+        <div class="settings-header">
+            <h3>Settings</h3>
+            <button id="settings-close" class="settings-close-btn">✕</button>
+        </div>
+        <div class="settings-content">
+            <div class="setting-group">
+                <h4>Theme</h4>
+                <button id="theme-toggle" class="setting-button">🌙 Dark Mode</button>
+            </div>
+            <div class="setting-group">
+                <h4>Undertone Color</h4>
+                <div class="undertone-controls">
+                    <input type="color" id="undertone-picker" value="#667eea">
+                    <span class="undertone-chip" id="undertone-hex">#667eea</span>
+                    <button id="undertone-palette" class="palette-btn" title="Undertone palette">
+                        <span class="swatch base" aria-hidden="true"></span>
+                        <span class="swatch a" aria-hidden="true"></span>
+                        <span class="swatch b" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settings-overlay" hidden></div>
+
+    <header>
+        <h1 class="lesson-heading">LESSON 3</h1>
+    </header>
+
+    <main>
+        <!-- Background layers to match main page styling -->
+        <div class="starfield" aria-hidden="true"></div>
+        <div class="star-sparkles" id="star-sparkles" aria-hidden="true"></div>
+        <div class="aurora-layer" aria-hidden="true">
+            <div class="aurora aurora-a"></div>
+            <div class="aurora aurora-b"></div>
+        </div>
+        <div class="parallax-layer" aria-hidden="true">
+            <div class="parallax-glow glow-a"></div>
+            <div class="parallax-glow glow-b"></div>
+        </div>
+        <div class="noise-overlay" aria-hidden="true"></div>
+        <div class="comet-layer" aria-hidden="true"></div>
+        
+        <section class="lesson-container">
+            <div class="glass-panel lesson-glass">
+                <div class="accordion" id="lesson3-accordion">
+                    <!-- Instructions (optional) -->
+                    <details class="accordion-item instructions-item" id="instructions">
+                        <summary><span>INSTRUCTIONS</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content instructions-content">
+                            <ol class="instructions-steps">
+                                <li class="inst-step">
+                                    <h4>Step 1: Learn the Numbers (0–9)</h4>
+                                    <p>Open each tab to study the sign for each number. Practice each until comfortable.</p>
+                                </li>
+                                <li class="inst-step">
+                                    <h4>Step 2: Practice</h4>
+                                    <p>Repeat the signs and check your hand shapes against the viewer.</p>
+                                </li>
+                                <li class="inst-step">
+                                    <h4>Step 3: Stay Consistent</h4>
+                                    <p>Consistency builds muscle memory. Keep going!</p>
+                                </li>
+                                <li class="inst-step">
+                                    <p class="inst-remember-line">✨ <strong>Remember:</strong> Consistent practice in this level strengthens your skills and builds the confidence you need to master the upcoming test.</p>
+                                </li>
+                            </ol>
+                            <button class="instructions-close" id="inst-close" hidden>Close</button>
+                        </div>
+                    </details>
+                    <!-- 10 Bars (NUMBER 0 – NUMBER 9) -->
+                    <details class="accordion-item" data-index="0">
+                        <summary><span>NUMBER 0</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 1 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="1">
+                        <summary><span>NUMBER 1</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 2 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="2">
+                        <summary><span>NUMBER 2</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 3 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="3">
+                        <summary><span>NUMBER 3</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 4 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="4">
+                        <summary><span>NUMBER 4</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 5 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="5">
+                        <summary><span>NUMBER 5</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 6 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="6">
+                        <summary><span>NUMBER 6</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 7 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="7">
+                        <summary><span>NUMBER 7</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 8 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="8">
+                        <summary><span>NUMBER 8</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 9 goes here</div></div>
+                    </details>
+                    <details class="accordion-item" data-index="9">
+                        <summary><span>NUMBER 9</span><span class="chevron">▾</span></summary>
+                        <div class="accordion-content"><div class="video-placeholder">Video 10 goes here</div></div>
+                    </details>
+                </div>
+            </div>
+            <!-- Inline video viewer overlay -->
+            <div class="viewer-overlay" id="viewer" hidden>
+                <div class="viewer-panel glass-panel">
+                    <div class="viewer-header">
+                        <button class="viewer-back" id="viewer-back">← Prev</button>
+                        <div class="viewer-title" id="viewer-title">NUMBER 0</div>
+                        <div class="viewer-actions">
+                            <button class="viewer-next" id="viewer-next">Next →</button>
+                            <button class="viewer-close" id="viewer-close" title="Close">✕</button>
+                        </div>
+                    </div>
+                    <div class="viewer-media">
+                        <video id="lesson-video" controls playsinline preload="metadata"></video>
+                    </div>
+                    <div class="viewer-controls">
+                        <label>Speed
+                            <select id="playback-rate">
+                                <option value="0.5">0.5×</option>
+                                <option value="0.75">0.75×</option>
+                                <option value="1" selected>1×</option>
+                                <option value="1.25">1.25×</option>
+                                <option value="1.5">1.5×</option>
+                                <option value="1.75">1.75×</option>
+                                <option value="2">2×</option>
+                            </select>
+                        </label>
+                        <button id="pip-btn">Picture in Picture</button>
+                        <button id="fs-btn">Fullscreen</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Centered UI modal -->
+    <div class="ui-modal-overlay" id="ui-modal" hidden>
+        <div class="ui-modal">
+            <div class="ui-modal-title" id="ui-modal-title">Notice</div>
+            <div class="ui-modal-msg" id="ui-modal-msg">This item is locked. Complete the previous ones first.</div>
+            <div class="ui-modal-actions">
+                <button class="ui-modal-btn" id="ui-modal-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unlock next CTA (visible but disabled until complete) -->
+    <div class="lesson-footer-actions">
+        <button id="unlock-after-lesson3-btn" class="unlock-next-btn" disabled>
+            ⭐ UNLOCK TEST 1
+        </button>
+    </div>
+
+    <script src="{{ url_for('static', filename='lesson-script.js') }}?v=2025012603"></script>
+</body>
+</html>
+
+

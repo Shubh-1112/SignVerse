@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Login</title>
+    <style>
+        /* CSS Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Color System */
+    --primary: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --secondary: #14b8a6;
+    --accent: #f97316;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    
+    /* Neutral Colors */
+    --neutral-50: #f8fafc;
+    --neutral-100: #f1f5f9;
+    --neutral-200: #e2e8f0;
+    --neutral-300: #cbd5e1;
+    --neutral-400: #94a3b8;
+    --neutral-500: #64748b;
+    --neutral-600: #475569;
+    --neutral-700: #334155;
+    --neutral-800: #1e293b;
+    --neutral-900: #0f172a;
+    
+    /* Theme Colors */
+    --bg-primary: var(--neutral-900);
+    --bg-secondary: var(--neutral-800);
+    --bg-tertiary: var(--neutral-700);
+    --text-primary: var(--neutral-100);
+    --text-secondary: var(--neutral-300);
+    --text-muted: var(--neutral-500);
+    --border: var(--neutral-700);
+    
+    /* Spacing System (8px base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    
+    /* Typography */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.8;
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+    --bg-primary: var(--neutral-50);
+    --bg-secondary: var(--neutral-100);
+    --bg-tertiary: var(--neutral-200);
+    --text-primary: var(--neutral-900);
+    --text-secondary: var(--neutral-700);
+    --text-muted: var(--neutral-500);
+    --border: var(--neutral-300);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: var(--line-height-normal);
+    overflow-x: hidden;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Canvas Containers */
+.starfield-container,
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particles-container {
+    z-index: 1;
+}
+
+#starfield-canvas,
+#particles-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Mouse Tracker */
+#mouse-tracker {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.6;
+    transition: transform 0.1s ease;
+    transform: translate(-50%, -50%);
+}
+
+/* Main Container */
+.main-container {
+    position: relative;
+    z-index: 3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    position: fixed;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: 10;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(var(--bg-secondary), 0.8);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: var(--font-size-lg);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(var(--bg-tertiary), 0.9);
+}
+
+.theme-toggle .sun-icon {
+    display: none;
+}
+
+.theme-toggle .moon-icon {
+    display: block;
+}
+
+[data-theme="light"] .theme-toggle .sun-icon {
+    display: block;
+}
+
+[data-theme="light"] .theme-toggle .moon-icon {
+    display: none;
+}
+
+/* Login Container */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+}
+
+/* Login Card */
+.login-card {
+    background: rgba(var(--bg-secondary), 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-xl);
+    transition: all 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+/* Login Header */
+.login-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+}
+
+.logo-symbol {
+    font-size: var(--font-size-3xl);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+.logo-text {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    /* Remove static gradient fill */
+    background: linear-gradient(270deg, #3b82f6, #14b8a6, #e68641, #3b82f6);
+    background-size: 600% 600%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: waveColors 10s ease infinite;
+    margin: 0;
+}
+
+@keyframes waveColors {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+.login-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2) 0;
+    line-height: var(--line-height-tight);
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+/* Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.form-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkmark:hover {
+  border-color: var(--primary);
+  transform: scale(1.03);
+}
+
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark:after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+.forgot-password {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: var(--primary-dark);
+}
+
+.login-button {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg,#3b82f6,#1EC797);
+    background-size: 200% 100%;
+    background-position: left center;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    padding: 12px 24px;
+    box-shadow: 0 4px 32px 0 rgba(59, 130, 246, 0.25);
+    transition: transform 0.4s ease;
+}
+
+.login-button:hover {
+    animation: gradientShift 10s linear infinite;
+    transform: scale(1.05);
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: left center;
+    }
+    100% {
+        background-position: right center;
+    }
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: border-color 0.3s ease, transform 0.2s ease;
+  outline: none;
+}
+
+.form-input:hover {
+  border-color: var(--primary);
+  transform: scale(1.03);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+.login-button.loading {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
+}
+
+.login-footer p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+.contact-link {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--primary-dark);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+    0% {
+        filter: brightness(1);
+    }
+    100% {
+        filter: brightness(1.3);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: var(--space-4);
+    }
+    
+    .login-card {
+        padding: var(--space-6);
+    }
+    
+    .theme-toggle {
+        top: var(--space-4);
+        right: var(--space-4);
+        width: 40px;
+        height: 40px;
+    }
+    
+    .logo-text {
+        font-size: var(--font-size-xl);
+    }
+    
+    .login-title {
+        font-size: var(--font-size-lg);
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        max-width: 100%;
+    }
+    
+    .logo-container {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+    
+    .status-display {
+        margin-top: var(--space-6);
+        padding: var(--space-4);
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    :root {
+        --border: #ffffff;
+        --text-muted: var(--text-secondary);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 2rem;
+}
+
+.spinner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid;
+    border-image: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--accent), var(--primary)) 1;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+.spinner-ring:nth-child(2) {
+    animation-delay: -0.4s;
+    border-image: conic-gradient(from 120deg, var(--secondary), var(--accent), var(--primary), var(--secondary)) 1;
+}
+
+.spinner-ring:nth-child(3) {
+    animation-delay: -0.8s;
+    border-image: conic-gradient(from 240deg, var(--accent), var(--primary), var(--secondary), var(--accent)) 1;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    animation: pulse-text 2s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Page Loader */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.5s ease;
+}
+
+.page-loader.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.page-loader .loader {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 2rem;
+}
+
+.page-loader .spinner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+.page-loader .spinner-ring:nth-child(2) {
+    animation-delay: -0.4s;
+    border-top-color: var(--secondary);
+}
+
+.page-loader .spinner-ring:nth-child(3) {
+    animation-delay: -0.8s;
+    border-top-color: var(--accent);
+}
+
+.page-loader .loading-text {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    animation: pulse-text 2s ease-in-out infinite;
+}
+
+/* Print styles */
+@media print {
+    .starfield-container,
+    .particles-container,
+    #mouse-tracker,
+    .theme-toggle {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .login-card {
+        box-shadow: none;
+        border: 2px solid black;
+    }
+}
+    </style>
+</head>
+<body>
+    {% if error %}
+    <script>
+      Swal.fire({
+        title: '🛡️ SignVerse ',
+        text: "{{ error }}",
+        icon: 'info',
+        confirmButtonText: 'Okay'
+      });
+    </script>
+    {% endif %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          Swal.fire({
+            title: '🛡️ SignVerse ',
+            text: "{{ messages[0] }}",
+            icon: 'info',
+            confirmButtonText: 'Okay'
+          });
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <div id="pageLoader" class="page-loader active">
+  <div class="loader">
+    <div class="spinner-ring"></div>
+    <div class="spinner-ring"></div>
+    <div class="spinner-ring"></div>
+  </div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+    <div id="app">
+        <!-- Starfield Background -->
+        <div class="starfield-container">
+            <canvas id="starfield-canvas"></canvas>
+        </div>
+        
+        <!-- Floating Particles -->
+        <div class="particles-container">
+            <canvas id="particles-canvas"></canvas>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-container">
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="sun-icon">☀️</span>
+                <span class="moon-icon">🌙</span>
+            </button>
+            
+            <!-- Login Form -->
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="logo-container">
+                            <div class="logo-symbol">⚡</div>
+                            <h1 class="logo-text">SignVerse</h1>
+                        </div>
+                        <h2 class="login-title">Login</h2>
+                        <p class="login-subtitle">Enter your credentials to access your account</p>
+                    </div>
+                    
+                    <!-- Flask Login Form -->
+                    <form id="login-form" class="login-form" method="POST" action="{{ url_for('login') }}">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Username</label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username"
+                                class="form-input" 
+                                placeholder="Enter your username"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password"
+                                class="form-input" 
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="remember-me">
+                                <span class="checkmark"></span>
+                                Remember me
+                            </label>
+                            <a href="{{ url_for('verify_edit') }}?forgot_password=true" class="forgot-password">Forgot password?</a>
+                        </div>
+                        
+                        <button type="submit" class="login-button">
+                            <span class="button-text">Sign In</span>
+                            <span class="button-loading" style="display: none;">Connecting...</span>
+                        </button>
+                    </form>
+                    
+                    <div class="login-footer">
+                        <p>Don't have an account?
+                          <a href="{{ url_for('register') }}" class="contact-link">Sign Up</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>// Theme Management
+class ThemeManager {
+    constructor() {
+        this.theme = localStorage.getItem('theme') || 'dark';
+        this.init();
+    }
+    
+    init() {
+        this.applyTheme();
+        this.setupToggle();
+    }
+    
+    applyTheme() {
+        document.documentElement.setAttribute('data-theme', this.theme);
+    }
+    
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', this.theme);
+        this.applyTheme();
+    }
+    
+    setupToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', () => this.toggleTheme());
+        }
+    }
+}
+
+// Starfield Background
+class StarfieldBackground {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.stars = [];
+        this.numStars = 200;
+        this.speed = 0.5;
+        
+        this.init();
+        this.animate();
+        this.handleResize();
+    }
+    
+    init() {
+        this.resize();
+        this.createStars();
+    }
+    
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.centerX = this.canvas.width / 2;
+        this.centerY = this.canvas.height / 2;
+    }
+    
+    createStars() {
+        this.stars = [];
+        for (let i = 0; i < this.numStars; i++) {
+            this.stars.push({
+                x: Math.random() * this.canvas.width - this.centerX,
+                y: Math.random() * this.canvas.height - this.centerY,
+                z: Math.random() * 1000,
+                brightness: Math.random() * 0.8 + 0.2
+            });
+        }
+    }
+    
+    updateStars() {
+        this.stars.forEach(star => {
+            star.z -= this.speed;
+            
+            if (star.z <= 0) {
+                star.x = Math.random() * this.canvas.width - this.centerX;
+                star.y = Math.random() * this.canvas.height - this.centerY;
+                star.z = 1000;
+                star.brightness = Math.random() * 0.8 + 0.2;
+            }
+        });
+    }
+    
+    drawStars() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.stars.forEach(star => {
+            const x = (star.x / star.z) * 300 + this.centerX;
+            const y = (star.y / star.z) * 300 + this.centerY;
+            const size = Math.max(0, (1 - star.z / 1000) * 3);
+            
+            if (x >= 0 && x <= this.canvas.width && y >= 0 && y <= this.canvas.height) {
+                this.ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                this.ctx.fill();
+                
+                // Add twinkle effect
+                if (Math.random() < 0.01) {
+                    this.ctx.fillStyle = `rgba(135, 206, 250, ${star.brightness * 0.5})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, size * 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+        });
+    }
+    
+    animate() {
+        this.updateStars();
+        this.drawStars();
+        requestAnimationFrame(() => this.animate());
+    }
+    
+    handleResize() {
+        window.addEventListener('resize', () => {
+            this.resize();
+            this.createStars();
+        });
+    }
+}
+
+// Floating Particles (now: Star Tunnel)
+class FloatingParticles {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+
+        this.ctx = this.canvas.getContext('2d');
+        this.stars = [];
+        this.numStars = 120;  // Adjust for density and performance
+        this.speed = 2.0;     // Adjust for desired burst speed
+
+        this.init();
+        this.animate();
+        this.handleResize();
+    }
+
+    init() {
+        this.resize();
+        this.createStars();
+    }
+
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.centerX = this.canvas.width / 2;
+        this.centerY = this.canvas.height / 2;
+    }
+
+    createStars() {
+        this.stars = [];
+        for (let i = 0; i < this.numStars; i++) {
+            this.stars.push(this.randomStar());
+        }
+    }
+
+    randomStar() {
+        const angle = Math.random() * 2 * Math.PI;
+        // Inner radius so they don't pop directly on center but have spread
+        const radius = Math.random() * 4;
+        return {
+            angle: angle,
+            radius: radius,
+            distance: 0,
+            speed: Math.random() * 2 + this.speed,
+            size: Math.random() * 2.2 + 0.6,
+            opacity: Math.random() * 0.7 + 0.3,
+        };
+    }
+
+    updateStars() {
+        this.stars.forEach(star => {
+            // Move star outward in its trajectory (angle is fixed)
+            star.distance += star.speed;
+            if (
+                this.centerX + Math.cos(star.angle) * star.distance < 0 ||
+                this.centerX + Math.cos(star.angle) * star.distance > this.canvas.width ||
+                this.centerY + Math.sin(star.angle) * star.distance < 0 ||
+                this.centerY + Math.sin(star.angle) * star.distance > this.canvas.height
+            ) {
+                // Reset star to center
+                Object.assign(star, this.randomStar());
+            }
+        });
+    }
+
+    drawStars() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const theme = document.documentElement.getAttribute('data-theme');
+    const techColors = ['#3b82f6', '#14b8a6', '#f97316', '#8b5cf6', '#06b6d4']; // blue, teal, orange, purple, cyan
+
+    this.stars.forEach(star => {
+        const x = this.centerX + Math.cos(star.angle) * (star.distance + star.radius);
+        const y = this.centerY + Math.sin(star.angle) * (star.distance + star.radius);
+
+        this.ctx.save();
+        this.ctx.globalAlpha = star.opacity;
+
+        // Choose color based on theme
+        if (theme === 'light') {
+            // Select a color from the palette based on star's index or random
+            const color = techColors[Math.floor(Math.random() * techColors.length)];
+            this.ctx.fillStyle = color;
+            this.ctx.shadowColor = color;
+        } else {
+            this.ctx.fillStyle = 'white';
+            this.ctx.shadowColor = 'rgba(100,200,255,0.14)';
+        }
+
+        this.ctx.shadowBlur = 8;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, star.size, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.restore();
+    });
+}
+
+    animate() {
+        this.updateStars();
+        this.drawStars();
+        requestAnimationFrame(() => this.animate());
+    }
+
+    handleResize() {
+        window.addEventListener('resize', () => {
+            this.resize();
+            this.createStars();
+        });
+    }
+}
+
+
+// Mouse Tracker
+class MouseTracker {
+    constructor(elementId) {
+        this.element = document.getElementById(elementId);
+        if (!this.element) return;
+        
+        this.init();
+    }
+    
+    init() {
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+        
+        const updatePosition = () => {
+            mouseX += (targetX - mouseX) * 0.1;
+            mouseY += (targetY - mouseY) * 0.1;
+            
+            this.element.style.left = mouseX + 'px';
+            this.element.style.top = mouseY + 'px';
+            
+            requestAnimationFrame(updatePosition);
+        };
+        
+        updatePosition();
+    }
+}
+
+// Login Form Handler
+class LoginForm {
+    constructor(formId) {
+        this.form = document.getElementById(formId);
+        if (!this.form) return;
+        
+        this.init();
+    }
+    
+    init() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.setupInputAnimations();
+    }
+    
+    handleSubmit(e) {
+        const button = this.form.querySelector('.login-button');
+        const buttonText = button.querySelector('.button-text');
+        const buttonLoading = button.querySelector('.button-loading');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Show loading overlay and disable button
+        loadingOverlay.classList.add('active');
+        button.disabled = true;
+
+        // Show loading state on button
+        button.classList.add('loading');
+        buttonText.style.display = 'none';
+        buttonLoading.style.display = 'inline';
+
+        // Let the form submit naturally
+    }
+    
+    setupInputAnimations() {
+        const inputs = this.form.querySelectorAll('.form-input');
+        
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    input.parentElement.classList.remove('focused');
+                }
+            });
+            
+            if (input.value) {
+                input.parentElement.classList.add('focused');
+            }
+        });
+    }
+}
+
+// Status Monitor
+class StatusMonitor {
+    constructor() {
+        this.init();
+    }
+    
+    init() {
+        this.updateStatus();
+        setInterval(() => this.updateStatus(), 5000);
+    }
+    
+    updateStatus() {
+        const statusValues = document.querySelectorAll('.status-value');
+        
+        statusValues.forEach(value => {
+            // Add pulse effect
+            value.style.animation = 'pulse 0.5s ease-in-out';
+            setTimeout(() => {
+                value.style.animation = '';
+            }, 500);
+        });
+    }
+}
+
+// Initialize Application
+class SpaceStationApp {
+    constructor() {
+        this.init();
+    }
+    
+    init() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initializeComponents());
+        } else {
+            this.initializeComponents();
+        }
+    }
+    
+    initializeComponents() {
+        this.themeManager = new ThemeManager();
+        this.starfield = new StarfieldBackground('starfield-canvas');
+        this.particles = new FloatingParticles('particles-canvas');
+        this.mouseTracker = new MouseTracker('mouse-tracker');
+        this.loginForm = new LoginForm('login-form');
+        this.addCustomStyles();
+
+        // Initialize shadow-follow effect on form card
+        this.setupCardShadowMouseFollow();
+
+    }
+    
+    setupCardShadowMouseFollow() {
+        const card = document.querySelector('.login-card');
+        if (!card) return;
+
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            // Calculate mouse position relative to the center of the card
+            const offsetX = e.clientX - (rect.left + rect.width / 2);
+            const offsetY = e.clientY - (rect.top + rect.height / 2);
+
+            // Scale the shadow offset - adjust 'maxShadowOffset' for intensity
+            const maxShadowOffset = 10;
+            const shadowX = (offsetX / (rect.width / 2)) * maxShadowOffset;
+            const shadowY = (offsetY / (rect.height / 2)) * maxShadowOffset;
+
+            // Apply multi-layered colorful shadows for tech look
+            card.style.boxShadow = `
+                ${-shadowX}px ${-shadowY}px 20px 8px rgba(59, 130, 246, 0.6),
+                ${shadowX}px ${shadowY}px 20px 5px rgba(20, 184, 166, 0.5),
+                0 0 16px 3px rgba(249, 115, 22, 0.4)
+            `;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            // Reset shadows on mouse leave
+            card.style.boxShadow = '';
+        });
+    }
+
+    addCustomStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .form-group.focused .form-label {
+                color: var(--primary);
+                transform: translateY(-2px);
+            }
+            .success-message {
+                animation: slideIn 0.3s ease-out forwards;
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1);}
+                50% { transform: scale(1.05);}
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+const loginButton = document.querySelector('.login-button');
+
+if (loginButton) {
+    // Add transition effect
+    loginButton.style.transition = 'background 0.4s ease, background-position 0.4s ease';
+
+    loginButton.addEventListener('mousemove', (e) => {
+        const rect = loginButton.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const midPoint = rect.width / 2;
+
+        if (x < midPoint) {
+            loginButton.style.background = 'linear-gradient(90deg, #1EC797, #3b82f6)';
+            loginButton.style.backgroundPosition = 'left center';
+        } else {
+            loginButton.style.background = 'linear-gradient(90deg, #3b82f6, #1EC797)';
+            loginButton.style.backgroundPosition = 'right center';
+        }
+    });
+
+    loginButton.addEventListener('mouseleave', () => {
+        loginButton.style.background = 'linear-gradient(90deg,#3b82f6,#1EC797)'; // revert to solid blue
+        loginButton.style.backgroundPosition = 'initial';
+    });
+}
+
+// Start the application
+new SpaceStationApp();
+
+// Page Loader Handler
+window.addEventListener('load', () => {
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => loader.remove(), 500);
+    }
+});
+
+// Export for potential external use
+window.SpaceStationApp = SpaceStationApp;</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>SignVerse - Live Translation</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    text-align:center;
+    margin:0;
+    padding:20px;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  #container { position: relative; display: inline-block; width: 480px; height: 360px; border: 2px solid #333; border-radius: 6px; overflow: hidden; background:#000; }
+  video, canvas { width: 100%; height: 100%; border-radius: 6px; }
+  canvas { position:absolute; left:0; top:0; pointer-events:none; }
+  #status { margin-top:10px; font-weight:bold; }
+  #countdownBox { margin-top:6px; font-size:16px; color:#d35400; font-weight:bold; min-height:22px; }
+  #progressWrap { max-width:480px; margin:6px auto; height:6px; background:#ddd; border-radius:6px; overflow:hidden; display:block; }
+  #progressBar { height:100%; width:0%; background:#d35400; transition: width 0.1s linear; }
+  #sentenceBox { margin-top:10px; padding:8px; background:#222; color:#0f0; font-size:18px; border-radius:6px; min-height:40px; max-width:480px; margin-left:auto; margin-right:auto; white-space: pre-wrap; word-wrap: break-word; overflow-y:auto; max-height:120px; }
+  button { margin:6px; padding:8px 16px; font-size:14px; border:none; border-radius:6px; cursor:pointer; }
+  .btn-start { background:#3498db; color:#fff; }
+  .btn-end { background:#69377c; color:#fff; }
+  .btn-copy { background:#2ecc71; color:#fff; }
+  .btn-clear { background:#e74c3c; color:#fff; }
+  .btn-correct { background:#f39c12; color:#fff; }
+</style>
+</head>
+<body>
+<h2>✋ Sign to Text Language</h2>
+
+<div id="container">
+          <video id="video" autoplay playsinline muted></video>
+  <canvas id="overlay"></canvas>
+    </div>
+
+<div id="status">Status: Initializing camera...</div>
+<div id="countdownBox"></div>
+<div id="progressWrap"><div id="progressBar"></div></div>
+
+<div id="sentenceBox" contenteditable="false" ></div>
+
+<!-- Style Enhancement Section -->
+<div id="style-section">
+  <button id="toggleStyleBtn">🎨 Toggle Styles</button>
+  <div id="styleOptions" style="display:none; margin-top:10px;">
+    <select id="styleSelect">
+      <option value="formal">Formal</option>
+      <option value="casual">Casual</option>
+      <option value="poetic">Poetic</option>
+      <option value="persuasive">Persuasive</option>
+      <option value="professional">Professional</option>
+    </select>
+    <button id="applyStyleBtn">Apply Style</button>
+  </div>
+</div>
+
+<!-- Confidence Threshold Section -->
+<div id="confidence-section">
+  <button id="toggleConfidenceBtn">🎯 Confidence Threshold</button>
+  <div id="confidenceOptions" style="display:none; margin-top:10px;">
+    <div style="margin-bottom:10px;">
+      <label for="confidenceSlider" id="confidenceLabel">Confidence Threshold: <span id="confidenceValue">0.3</span></label>
+    </div>
+    <input type="range" id="confidenceSlider" min="0.1" max="0.9" step="0.1" value="0.3" style="width:200px;">
+    <div style="margin-top:5px; font-size:12px; color:#666;">
+      Lower values detect more signs (less accurate) • Higher values detect fewer signs (more accurate)
+    </div>
+  </div>
+</div>
+
+<!-- Control Buttons -->
+<button class="btn-start" onclick="startSentence()">Start</button>
+<button class="btn-end" onclick="endSentence()">Stop</button>
+<button class="btn-copy" onclick="copyText('sentenceBox')">Copy</button>
+<button class="btn-clear" onclick="resetSentence()">Clear</button>
+
+<div id="grammarMsg"></div>
+<div id="copyMsg"></div>
+
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+const status = document.getElementById('status');
+const sentenceBox = document.getElementById('sentenceBox');
+const countdownBox = document.getElementById('countdownBox');
+const progressBar = document.getElementById('progressBar');
+
+let detectionActive = false;
+let lastResponse = null;
+let processing = false;
+let activeTimers = {};
+let serverSentence = "";
+
+// Get confidence threshold elements
+const toggleConfidenceBtn = document.getElementById("toggleConfidenceBtn");
+const confidenceOptions = document.getElementById("confidenceOptions");
+const confidenceSlider = document.getElementById("confidenceSlider");
+const confidenceValue = document.getElementById("confidenceValue");
+
+// Toggle confidence options
+toggleConfidenceBtn.addEventListener("click", () => {
+  confidenceOptions.style.display = confidenceOptions.style.display === "none" ? "block" : "none";
+});
+
+// Handle confidence slider changes
+confidenceSlider.addEventListener("input", async (e) => {
+    const newValue = parseFloat(e.target.value);
+    confidenceValue.textContent = newValue;
+
+    try {
+        // Send new confidence threshold to backend
+        const response = await fetch('/set_confidence_threshold', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                confidence_threshold: newValue
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            countdownBox.innerText = `Confidence threshold updated to ${newValue}`;
+            setTimeout(() => {
+                countdownBox.innerText = "";
+            }, 2000);
+        } else {
+            countdownBox.innerText = "Error updating confidence threshold";
+        }
+    } catch (error) {
+        console.error('Confidence threshold update error:', error);
+        countdownBox.innerText = "Error updating confidence threshold";
+    }
+});
+
+const toggleBtn = document.getElementById("toggleStyleBtn");
+const styleOptions = document.getElementById("styleOptions");
+const applyStyleBtn = document.getElementById("applyStyleBtn");
+const styleSelect = document.getElementById("styleSelect");
+
+// Toggle style options
+toggleBtn.addEventListener("click", () => {
+  styleOptions.style.display = styleOptions.style.display === "none" ? "block" : "none";
+});
+
+// Apply Style button functionality
+applyStyleBtn.addEventListener("click", async () => {
+    const currentText = sentenceBox.innerText.trim();
+    const selectedStyle = styleSelect.value;
+
+    // Check if there's text to enhance
+    if (!currentText) {
+        countdownBox.innerText = "No text to enhance. Please add some text first.";
+        return;
+    }
+
+    // Disable button and show loading state
+    applyStyleBtn.disabled = true;
+    applyStyleBtn.innerText = "Applying...";
+    countdownBox.innerText = "Applying style enhancement...";
+
+    // Start progress bar
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 5;
+        if (progress >= 95) progress = 95;
+        progressBar.style.width = progress + "%";
+    }, 200);
+
+    try {
+        // Send request to style enhancement endpoint
+        const response = await fetch('/style_enhancement', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: currentText,
+                style: selectedStyle
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            countdownBox.innerText = "Error: " + data.error;
+        } else {
+            // Success - update the sentence box with enhanced text
+            sentenceBox.innerText = data.enhanced;
+            serverSentence = data.enhanced;
+            countdownBox.innerText = "Style applied successfully!";
+        }
+
+    } catch (error) {
+        console.error('Style enhancement error:', error);
+        countdownBox.innerText = "Error applying style. Please check your connection and try again.";
+    } finally {
+        // Clean up - stop progress bar, re-enable button
+        clearInterval(progressInterval);
+        progressBar.style.width = "100%";
+        setTimeout(() => {
+            progressBar.style.width = "0%";
+        }, 500);
+
+        applyStyleBtn.disabled = false;
+        applyStyleBtn.innerText = "Apply Style";
+    }
+});
+
+// Copy function (works for div/span)
+function copyText(elementId){
+    const el = document.getElementById(elementId);
+    const text = el.value || el.innerText;
+    navigator.clipboard.writeText(text).then(() => alert("Copied: " + text)).catch(err => console.error("Copy failed:", err));
+}
+
+
+
+// Progress bar
+function startGrammarProgress(){
+    let progress=0;
+    progressBar.style.width="0%";
+    return setInterval(()=>{ progress+=5; if(progress>=95) progress=95; progressBar.style.width=progress+"%"; }, 200);
+}
+function stopGrammarProgress(intervalId){ clearInterval(intervalId); progressBar.style.width="100%"; setTimeout(()=>progressBar.style.width="0%",500); }
+
+// Camera
+async function startCamera(){
+    try{
+        const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+        video.srcObject = stream;
+        await video.play();
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+        video.addEventListener("loadedmetadata", resizeCanvas);
+        status.innerText = "Status: Camera started. Ready.";
+        requestAnimationFrame(loop);
+    }catch(err){ console.error(err); status.innerText = "Error: "+err.message; }
+}
+function resizeCanvas(){ if(!video.videoWidth) return; canvas.width=video.videoWidth; canvas.height=video.videoHeight; canvas.style.width=video.clientWidth+"px"; canvas.style.height=video.clientHeight+"px"; }
+
+// Detection frame
+async function sendFrame(){
+    if(!video.videoWidth || !detectionActive) return {boxes:[], sentence:sentenceBox.innerText, countdowns:{}};
+    const off=document.createElement('canvas');
+    off.width=video.videoWidth; off.height=video.videoHeight;
+    off.getContext('2d').drawImage(video,0,0,off.width,off.height);
+    const dataUrl = off.toDataURL('image/jpeg',0.7);
+    try{
+        const res = await fetch('/detect',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({image:dataUrl})});
+        return await res.json();
+    }catch(e){ console.error(e); return {boxes:[], sentence:sentenceBox.innerText, countdowns:{}}; }
+}
+
+// Timers
+function resetTimers(){ activeTimers={}; lastResponse=null; }
+function updateTimers(countdowns){ activeTimers={}; if(countdowns) for(const k in countdowns){ if(countdowns[k]) activeTimers[k] = {...countdowns[k]}; } }
+function renderTimer(){
+    let text="", progress=0;
+    if(activeTimers.hold){ const cd=activeTimers.hold; text=`✋ Hold "${cd.label}" for ${cd.remaining.toFixed(1)}s`; progress=((cd.duration-cd.remaining)/cd.duration)*100; }
+    else if(activeTimers.space){ const cd=activeTimers.space; text=`⌛ Adding space in ${cd.remaining.toFixed(1)}s`; progress=((cd.duration-cd.remaining)/cd.duration)*100; }
+    else if(activeTimers.fullstop){ const cd=activeTimers.fullstop; text=`⌛ Adding full stop in ${cd.remaining.toFixed(1)}s`; progress=((cd.duration-cd.remaining)/cd.duration)*100; }
+    else if(activeTimers.comma){ const cd=activeTimers.comma; text=`⌛ Adding comma in ${cd.remaining.toFixed(1)}s`; progress=((cd.duration-cd.remaining)/cd.duration)*100; }
+    else return;
+    countdownBox.innerText=text; progressBar.style.width=progress+"%";
+}
+
+// Draw boxes
+function drawBox(box){
+    const x=box.x1,y=box.y1,w=box.x2-box.x1,h=box.y2-box.y1;
+    ctx.lineWidth=2; ctx.strokeStyle='lime'; ctx.strokeRect(x,y,w,h);
+    const label=`${box.class} ${(box.conf*100).toFixed(1)}%`;
+    ctx.fillStyle='rgba(0,0,0,0.6)';
+    ctx.fillRect(x,y-22,ctx.measureText(label).width+10,22);
+    ctx.fillStyle='white'; ctx.fillText(label,x+5,y-6);
+}
+
+// Controls
+async function resetSentence(){ await fetch('/reset',{method:"POST"}).catch(()=>{}); sentenceBox.innerText=""; countdownBox.innerText=""; progressBar.style.width="0%"; resetTimers(); serverSentence=""; }
+
+async function startSentence(){ resetTimers(); countdownBox.innerText="Detection will start in 2 seconds..."; progressBar.style.width="0%"; setTimeout(async()=>{
+    detectionActive=true; sentenceBox.setAttribute("contenteditable","false"); countdownBox.innerText="Detection started..."; serverSentence=sentenceBox.innerText;
+    await fetch('/resume_detection',{method:'POST'}).catch(()=>{});
+    try{ await fetch('/set_sentence',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sentence:serverSentence, pause:false})}); }
+    catch(e){console.error(e);}
+},2000);
+}
+
+async function endSentence(){
+    detectionActive=false;
+    const detectedText = sentenceBox.innerText.trim();
+
+    // If there's detected text, automatically process it
+    if(detectedText) {
+        sentenceBox.setAttribute("contenteditable","true");
+        countdownBox.innerText="Processing detected sentence...";
+        progressBar.style.width="0%";
+
+        try {
+            // First, apply grammar correction
+            const grammarResponse = await fetch('/sentence_correction', {
+                method:"POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({text:detectedText})
+            });
+
+            const grammarData = await grammarResponse.json();
+
+            if(grammarData.error) {
+                countdownBox.innerText="Error in grammar correction: " + grammarData.error;
+                return;
+            }
+
+            let finalText = grammarData.corrected;
+
+            // Check if style enhancement is enabled and apply it
+            const styleOptions = document.getElementById("styleOptions");
+            if(styleOptions.style.display !== "none") {
+                const selectedStyle = document.getElementById("styleSelect").value;
+
+                const styleResponse = await fetch('/style_enhancement', {
+                    method:"POST",
+                    headers:{"Content-Type":"application/json"},
+                    body:JSON.stringify({text:finalText, style:selectedStyle})
+                });
+
+                const styleData = await styleResponse.json();
+
+                if(!styleData.error) {
+                    finalText = styleData.enhanced;
+                }
+            }
+
+            // Replace the detected text with the processed text
+            sentenceBox.innerText = finalText;
+            countdownBox.innerText="Sentence processed and corrected successfully!";
+
+        } catch(err) {
+            console.error(err);
+            countdownBox.innerText="Error processing sentence. Check Flask & Ollama.";
+        }
+    } else {
+        sentenceBox.setAttribute("contenteditable","true");
+        countdownBox.innerText="Detection stopped. No sentence detected.";
+    }
+
+    progressBar.style.width="0%";
+    serverSentence=sentenceBox.innerText;
+    resetTimers();
+    await fetch('/set_sentence',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sentence:serverSentence,pause:true})}).catch(()=>{});
+}
+
+// Main loop
+async function loop(){
+    if(video.videoWidth && video.videoHeight){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(video,0,0,canvas.width,canvas.height); }
+    if(detectionActive && !processing){
+        processing=true;
+        sendFrame().then(json=>{
+            lastResponse=json; processing=false;
+            if(json.sentence){
+                const newText=json.sentence;
+                // Check if serverSentence contains countdown text or is empty
+                const isCountdownText = serverSentence.includes("Detection will start") ||
+                                      serverSentence.includes("Detection started") ||
+                                      serverSentence.trim() === "";
+
+                if(isCountdownText || !newText.startsWith(serverSentence)){
+                    // Replace entirely if serverSentence is countdown text or doesn't match
+                    sentenceBox.innerText=newText;
+                } else {
+                    // Append only the new part
+                    const toAppend=newText.slice(serverSentence.length);
+                    if(toAppend) sentenceBox.innerText+=toAppend;
+                }
+                serverSentence=sentenceBox.innerText;
+            }
+            updateTimers(json.countdowns);
+        }).catch(()=>{processing=false;});
+    }
+    if(lastResponse && lastResponse.boxes){ ctx.font="16px Arial"; for(const box of lastResponse.boxes) drawBox(box); status.innerText=`Status: ${lastResponse.boxes.length} detected`; }
+    renderTimer();
+    requestAnimationFrame(loop);
+}
+
+startCamera();
+</script>
+</body>
+</html>

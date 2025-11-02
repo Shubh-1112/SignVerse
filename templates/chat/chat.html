@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp - Your Chat Space</title>
+<link rel="stylesheet" href="/static/styles/chat_style.css">
+    <link rel="stylesheet" href="/static/styles/sign-to-text-popup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Login/Register Section -->
+        <div id="auth-section" class="auth-section" style="display:none;">
+            <!-- Hidden because main site handles login/registration -->
+        </div>
+        
+        <!-- Main Chat Interface -->
+        <div id="chat-interface" class="chat-interface" style="display: none;">
+            <header class="chat-header">
+                <div class="user-info">
+                    <div class="user-avatar" id="current-user-avatar">👤</div>
+                    <div class="user-details">
+                        <h3 id="current-user-name">User</h3>
+                        <p id="current-user-code">Code: </p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="menu-wrapper">
+                        <button class="btn-copy" id="settings-toggle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        <div class="menu-dropdown" id="settings-menu" style="display:none;">
+                            <div class="menu-item" style="display:flex; gap:6px;">
+                                <button class="btn-secondary" id="quick-add-friend">Add Friend by Code</button>
+                            </div>
+                            <div class="menu-item">
+                                <label>Username</label>
+                                <input type="text" id="settings-username" placeholder="Update username">
+                            </div>
+                            <div class="menu-item">
+                                <label>Profile Picture</label>
+                                <input type="file" id="settings-avatar" accept="image/*">
+                                <div class="avatar-adjust" id="avatar-adjust" style="display:none; margin-top:8px; gap:8px; flex-direction:column; align-items:center; padding:10px; border:1px solid rgba(255,255,255,0.08); border-radius:10px; background: var(--bg-secondary);">
+                                    <div style="width:96px; height:96px; border-radius:50%; overflow:hidden; background:#111; display:flex; align-items:center; justify-content:center;">
+                                        <img id="avatar-preview" alt="preview" style="max-width:none;">
+                                    </div>
+                                    <input style="width:100%;" type="range" id="avatar-zoom" min="1" max="3" step="0.01" value="1">
+                                    <div style="display:flex; gap:6px; width:100%; justify-content:flex-end;">
+                                        <button class="btn-secondary" id="avatar-apply-btn">Apply</button>
+                                        <button class="btn-secondary" id="avatar-cancel-btn">Cancel</button>
+                                    </div>
+                                </div>
+                                <button class="btn-secondary" id="upload-avatar-btn">Upload</button>
+                            </div>
+                            <div class="menu-item">
+                                <label>Your Code</label>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <input type="text" id="settings-code" readonly style="flex:1;">
+                                <button class="btn-secondary" id="settings-copy-code"><i class="fa-solid fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div class="menu-item">
+                                <label>Theme</label>
+                                <div class="theme-toggle">
+                                <button class="btn-secondary" id="theme-light"><i class="fa-regular fa-sun"></i> Light</button>
+                                <button class="btn-secondary" id="theme-dark"><i class="fa-solid fa-moon"></i> Dark</button>
+                                </div>
+                            </div>
+                            
+                            <div class="menu-actions">
+                                <button class="btn-primary" id="save-settings-btn"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                                <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </header>
+            
+            <div class="chat-body">
+                <aside class="sidebar">
+                    
+                    <div class="sidebar-section">
+                        <h4>Friend Requests <span id="request-count" class="badge">0</span></h4>
+                        <div id="friend-requests" class="friend-requests"></div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <h4>Friends <span id="friends-count" class="badge">0</span></h4>
+                        <div id="friends-list" class="friends-list"></div>
+                    </div>
+                </aside>
+                
+                <main class="chat-main">
+                    <div id="welcome-chat" class="welcome-chat">
+                        <div class="welcome-content">
+                            <button class="welcome-close-btn" id="welcome-close-btn" onclick="chatApp.closeWelcomeModal()" title="Close">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                            <h3>Welcome to ChatApp! 🎉</h3>
+                            <p>Your unique code is: <strong id="display-code"></strong></p>
+                            <p>Share this code with friends to connect with them.</p>
+                            <div class="instructions">
+                                <h4>How to get started:</h4>
+                                <ul>
+                                    <li>📋 Copy your unique code using the button above</li>
+                                    <li>📤 Share it with friends you want to chat with</li>
+                                    <li>➕ Add friends using their unique codes</li>
+                                    <li>💬 Start chatting once they accept your request!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="active-chat" class="active-chat" style="display: none;">
+                        <div class="chat-header-info">
+                            <button class="back-btn" id="mobile-back-btn" onclick="chatApp.closeChatMobile()" title="Back" style="display:none;">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <div class="friend-avatar">👤</div>
+                            <div class="friend-details">
+                                <h4 id="active-friend-name">Friend</h4>
+                                <p id="active-friend-status">Online</p>
+                            </div>
+                            <div class="header-actions" style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                                <button class="btn-copy" id="friend-video-call"><i class="fa-solid fa-video"></i></button>
+                                <div class="menu-wrapper">
+                                    <button class="btn-copy" id="friend-settings-toggle"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    <div class="menu-dropdown" id="friend-settings-menu" style="display:none;">
+                                        <div class="menu-item">
+                                            <label>Chat Background (this friend)</label>
+                                            <div class="bg-presets" style="display:flex; gap:6px; flex-wrap:wrap;">
+                                                <button class="btn-secondary" id="friend-bg-default">Default</button>
+                                                <button class="btn-secondary" id="friend-bg-sunrise">Sunrise</button>
+                                                <button class="btn-secondary" id="friend-bg-ocean">Ocean</button>
+                                                <button class="btn-secondary" id="friend-bg-midnight">Midnight</button>
+                                            </div>
+                                            <div style="margin-top:8px; display:flex; gap:6px; align-items:center;">
+                                                <input type="file" id="friend-chat-bg-file" accept="image/*">
+                                                <button class="btn-secondary" id="friend-chat-bg-upload-btn">Use Image</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="messages-container" id="messages-container"></div>
+                        
+                        <div class="message-input-container">
+                        <div id="mode-strip" class="mode-strip" hidden>Mode</div>
+                        <div class="message-input-bar">
+                                <button class="icon-btn" id="attach-btn" title="Attach"><i class="fa-solid fa-plus"></i></button>
+                            <div class="menu-wrapper">
+                                <button class="icon-btn" id="sign-toggle" title="Sign tools"><i class="fa-solid fa-sign-language"></i></button>
+                                <div class="menu-dropdown" id="sign-menu" hidden>
+                                    <div class="menu-item">
+                                        <button class="btn-secondary" id="mode-text-to-sign">Text → Sign</button>
+                                    </div>
+                                    <div class="menu-item">
+                                        <button class="btn-secondary" id="mode-sign-to-text">Sign → Text</button>
+                                    </div>
+                                </div>
+                            </div>
+                                <input type="text" id="message-input" placeholder="Type your message..." onkeypress="handleMessageKeyPress(event)">
+                                <div class="menu-wrapper ai-wrapper">
+                                    <button class="icon-btn" id="ai-toggle" title="AI Tools"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                                    <div class="menu-dropdown ai-menu" id="ai-menu" hidden>
+                                        <div class="menu-item">
+                                            <button class="btn-secondary" id="ai-grammar">Grammar</button>
+                                        </div>
+                                        <div class="menu-item">
+                                            <button class="btn-secondary" id="ai-style-toggle">Style ▸</button>
+                                            <div class="style-grid" id="ai-style-grid" hidden style="margin-top:6px;">
+                                                <button class="btn-secondary style-btn" data-style="formal">Formal</button>
+                                                <button class="btn-secondary style-btn" data-style="professional">Professional</button>
+                                                <button class="btn-secondary style-btn" data-style="persuasive">Persuasive</button>
+                                                <button class="btn-secondary style-btn" data-style="casual">Casual</button>
+                                                <button class="btn-secondary style-btn" data-style="poetic">Poetic</button>
+                                            </div>
+                                        </div>
+                                        <div class="menu-item">
+                                            <button class="btn-secondary" id="ai-language-toggle">Translate ▸</button>
+                                            <div class="language-grid" id="ai-language-grid" hidden style="margin-top:6px;">
+                                                <button class="btn-secondary language-btn" data-language="hindi">Hindi</button>
+                                                <button class="btn-secondary language-btn" data-language="bengali">Bengali</button>
+                                                <button class="btn-secondary language-btn" data-language="tamil">Tamil</button>
+                                                <button class="btn-secondary language-btn" data-language="telugu">Telugu</button>
+                                                <button class="btn-secondary language-btn" data-language="marathi">Marathi</button>
+                                                <button class="btn-secondary language-btn" data-language="gujarati">Gujarati</button>
+                                                <button class="btn-secondary language-btn" data-language="kannada">Kannada</button>
+                                                <button class="btn-secondary language-btn" data-language="malayalam">Malayalam</button>
+                                                <button class="btn-secondary language-btn" data-language="punjabi">Punjabi</button>
+                                                <button class="btn-secondary language-btn" data-language="urdu">Urdu</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn-send" id="send-btn" onclick="sendMessage()" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+                                <input type="file" id="attach-input" style="display:none;" />
+                            </div>
+                            <div id="attach-panel" class="attach-panel" style="display:none; margin-top:8px; padding:8px; border:1px solid var(--border-color); border-radius:10px; background: var(--bg-secondary); position: relative;">
+                                <button class="attach-close-btn" id="attach-close-btn" style="position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border: none; background: var(--error-color); color: white; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 10;" title="Remove attachment">×</button>
+                                <div style="display:flex; gap:10px; align-items:center; padding-right: 8px;">
+                                    <div id="attach-preview" style="width:64px; height:64px; border-radius:8px; background:#111; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:12px; color:#999;"></div>
+                                    <div style="flex:1;">
+                                        <div id="attach-filename" style="font-weight:600; margin-bottom:4px;">Selected file</div>
+                                        <div id="attach-meta" style="font-size:12px; color:#888;">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Friend Modal -->
+    <div id="add-friend-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Friend</h3>
+                <button class="modal-close-btn" id="add-friend-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your friend's unique code to send a friend request.</p>
+                <input type="text" id="add-friend-code" placeholder="Friend's code" maxlength="8" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: var(--border-radius); font-size: 1rem; background: var(--bg-primary); color: var(--text-primary); margin-bottom: 16px;">
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="btn-primary" id="add-friend-submit">Add Friend</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="custom-alert-title">Alert</h3>
+                <button class="modal-close-btn" id="custom-alert-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="custom-alert-message"></p>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="btn-primary" id="custom-alert-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3 id="logout-title">Confirm Logout</h3>
+            <button class="modal-close-btn" id="logout-close">&times;</button>
+        </div>
+            <div class="modal-body">
+                <p id="logout-message">Are you sure you want to logout?</p>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="btn-primary" id="logout-ok">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text-to-sign and image gallery modals removed -->
+
+    <!-- Sign-to-Text Popup Modal -->
+    <div id="sign-to-text-modal-overlay" class="sign-to-text-modal-overlay" style="display: none;">
+        <div class="sign-to-text-modal">
+            <div class="sign-to-text-modal-header">
+                <h3 class="sign-to-text-modal-title">
+                    <span class="icon">✋</span>
+                    Sign-to-Text
+                </h3>
+                <button class="sign-to-text-close-btn" id="sign-to-text-close-btn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sign-to-text-modal-body">
+                <div class="popup-video-section">
+                    <div class="popup-video-container">
+                        <video id="popup-video" class="popup-video" autoplay playsinline muted style="display: none;"></video>
+                        <canvas id="popup-overlay" class="popup-video-overlay"></canvas>
+                        <div id="popup-video-placeholder" class="popup-video-placeholder">
+                            <div class="icon">📹</div>
+                            <div>Starting camera...</div>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">Please allow camera access</div>
+                        </div>
+                    </div>
+                    
+                    <div class="popup-status-section">
+                        <div class="popup-status-display" id="popup-status">Status: Ready to start</div>
+                        <div class="popup-countdown-text" id="popup-countdown" aria-live="polite" aria-atomic="true"></div>
+                        <div class="popup-progress-container">
+                            <div class="popup-progress-bar" id="popup-progress"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="popup-text-section">
+                    <div class="popup-sentence-display" id="popup-sentence" contenteditable="false"></div>
+                    <div class="popup-speak-section" id="popupSpeakSection" style="margin-top: 12px; display: none;">
+                        <button class="popup-control-btn popup-btn-speak" id="popupSpeakBtn" title="Speak Text">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            <span>Speak</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="popup-main-controls-section">
+                    <button class="popup-control-btn popup-btn-start" id="popup-start-btn">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Start Detection</span>
+                    </button>
+                    <button class="popup-control-btn popup-btn-stop" id="popup-stop-btn" disabled>
+                        <i class="fa-solid fa-stop"></i>
+                        <span>Stop Detection</span>
+                    </button>
+                    <button class="popup-control-btn popup-btn-clear" id="popup-clear-btn">
+                        <i class="fa-solid fa-refresh"></i>
+                        <span>Reset</span>
+                    </button>
+                </div>
+                
+                <details class="popup-settings-details">
+                    <summary class="popup-settings-summary">
+                        <span>⚙️ Advanced Settings</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </summary>
+                    <div class="popup-settings-section">
+                        <div class="popup-settings-card">
+                            <div class="popup-settings-header">
+                                <span class="popup-settings-title">🎨 Style Enhancement</span>
+                            </div>
+                            <div class="popup-settings-content active">
+                                <div class="popup-settings-option">
+                                    <label class="popup-settings-label" for="popup-style-select">Choose Style:</label>
+                                    <select class="popup-style-select" id="popup-style-select">
+                                        <option value="formal">Formal</option>
+                                        <option value="casual">Casual</option>
+                                        <option value="poetic">Poetic</option>
+                                        <option value="persuasive">Persuasive</option>
+                                        <option value="professional">Professional</option>
+                                    </select>
+                                </div>
+                                <button class="popup-control-btn popup-btn-apply" id="popup-apply-style">Apply Style</button>
+                            </div>
+                        </div>
+                        
+                        <div class="popup-settings-card">
+                            <div class="popup-settings-header">
+                                <span class="popup-settings-title">🌍 Language Translation</span>
+                            </div>
+                            <div class="popup-settings-content active">
+                                <div class="popup-settings-option">
+                                    <label class="popup-settings-label" for="popup-language-select">Choose Language:</label>
+                                    <select class="popup-style-select" id="popup-language-select">
+                                        <option value="hindi">Hindi</option>
+                                        <option value="bengali">Bengali</option>
+                                        <option value="tamil">Tamil</option>
+                                        <option value="telugu">Telugu</option>
+                                        <option value="marathi">Marathi</option>
+                                        <option value="gujarati">Gujarati</option>
+                                        <option value="kannada">Kannada</option>
+                                        <option value="malayalam">Malayalam</option>
+                                        <option value="punjabi">Punjabi</option>
+                                        <option value="urdu">Urdu</option>
+                                    </select>
+                                </div>
+                                <button class="popup-control-btn popup-btn-apply" id="popup-apply-language">Translate Text</button>
+                            </div>
+                        </div>
+                        
+                        <div class="popup-settings-card">
+                            <div class="popup-settings-header">
+                                <span class="popup-settings-title">🎯 Confidence: <span id="popup-confidence-value">0.3</span></span>
+                            </div>
+                            <div class="popup-settings-content active">
+                                <div class="popup-settings-option">
+                                    <input type="range" class="popup-confidence-slider" id="popup-confidence-slider" 
+                                           min="0.1" max="0.9" step="0.1" value="0.3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+            
+            <div class="sign-to-text-modal-footer">
+                <button class="popup-btn-cancel" id="popup-cancel-btn">
+                    <i class="fa-solid fa-times"></i>
+                    Cancel
+                </button>
+                <button class="popup-btn-send" id="popup-send-btn" disabled>
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="/static/js/chat-script.js"></script>
+    <script>
+      // Bootstrap from main login automatically
+      (async function() {
+        try {
+          const statusRes = await fetch('/api/login-status');
+          const status = await statusRes.json();
+          if (!status.logged_in) {
+            window.location.href = '/login';
+            return;
+          }
+          // Ask server to create/fetch chat user for this main account
+          const resp = await fetch('/chat/bootstrap_current', { method: 'POST' });
+          if (resp.ok) {
+            const user = await resp.json();
+            // Seed localStorage for chat app
+            localStorage.setItem('chatapp_current_user', JSON.stringify(user));
+            // If chatApp is loaded, refresh its session/UI
+            if (window.chatApp) {
+              window.chatApp.loadUserSession();
+              window.chatApp.updateUI();
+            } else {
+              // Create an instance now that credentials are ready
+              window.chatApp = new ChatApp();
+            }
+          }
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
+</body>
+</html>

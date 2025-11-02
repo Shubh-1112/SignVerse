@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Test - ISL Learning Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='test-styles.css') }}">
+    <meta name="robots" content="noindex">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+</head>
+<body>
+    <!-- Go Back Button -->
+    <a href="{{ url_for('learning_hub') }}" class="go-back-btn" title="Go back to Home">GO BACK</a>
+    
+    <div id="root"></div>
+    <script src="{{ url_for('static', filename='test-main.js') }}?v=2025012602"></script>
+</body>
+</html>

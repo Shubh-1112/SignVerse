@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verify Identity - SignVerse</title>
+    <link rel="stylesheet" href="/static/styles/main.css" />
+    <link rel="stylesheet" href="/static/styles/components.css" />
+    <link rel="stylesheet" href="/static/styles/animations.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            animation: particleFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .verify-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: #f5f5f5;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .verify-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .verify-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .verify-header h2 {
+            font-family: 'Times New Roman';
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .verify-header p {
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .verify-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .option-group input[type="radio"] {
+            display: none;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(46, 46, 46, 0.9) 0%, rgba(26, 26, 26, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .option-label:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .option-group input[type="radio"]:checked + .option-label {
+            border-color: #d4af37;
+            background: linear-gradient(135deg, rgba(46, 46, 46, 1) 0%, rgba(26, 26, 26, 1) 100%);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .option-label .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .option-label span {
+            font-weight: 600;
+            color: #f5f5f5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-fields {
+            margin-bottom: 2rem;
+        }
+
+        .field-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #f5f5f5;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            background: rgba(26, 26, 26, 0.8);
+            color: #f5f5f5;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #0a0a0a;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .back-link:hover {
+            color: #0a0a0a;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(45deg) translateX(-100%); }
+            100% { transform: rotate(45deg) translateX(100%); }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+            50% { text-shadow: 0 0 40px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3); }
+        }
+
+        @media (max-width: 768px) {
+            .verify-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .verify-header h2 {
+                font-size: 2rem;
+            }
+
+            .verify-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .verify-card {
+                padding: 1.5rem;
+            }
+
+            .card-header {
+                gap: 0.75rem;
+            }
+
+            .card-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="verify-container">
+        <div class="verify-header">
+            {% if forgot_password %}
+                <h2>Reset Your Password</h2>
+                <p>Enter your username and verify your identity to reset your password.</p>
+            {% else %}
+                <h2>Verify Your Identity</h2>
+                <p>Choose one method to verify your identity before editing your profile.</p>
+            {% endif %}
+        </div>
+        <form method="POST" id="verifyForm">
+            <div class="verify-options">
+                <div class="option-group">
+                    <input type="radio" id="verify_password" name="verify_type" value="password" checked>
+                    <label for="verify_password" class="option-label">
+                        <div class="card-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <span>Verify with Password</span>
+                    </label>
+                </div>
+                <div class="option-group">
+                    <input type="radio" id="verify_contact" name="verify_type" value="contact">
+                    <label for="verify_contact" class="option-label">
+                        <div class="card-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <span>Verify with Contact</span>
+                    </label>
+                </div>
+                <div class="option-group">
+                    <input type="radio" id="verify_email" name="verify_type" value="email">
+                    <label for="verify_email" class="option-label">
+                        <div class="card-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <span>Verify with Email</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-fields">
+                {% if forgot_password %}
+                <div class="form-group">
+                    <label for="username">Enter Your Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                {% endif %}
+                <div id="password_field" class="field-group">
+                    <div class="form-group">
+                        <label for="password">Enter Your Password</label>
+                        <input type="password" id="password" name="password">
+                    </div>
+                </div>
+                <div id="contact_field" class="field-group" style="display: none;">
+                    <div class="form-group">
+                        <label for="contact">Enter Your Contact Number</label>
+                        <input type="text" id="contact" name="contact">
+                    </div>
+                </div>
+                <div id="email_field" class="field-group" style="display: none;">
+                    <div class="form-group">
+                        <label for="email">Enter Your Email Address</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Confirm Date of Birth</label>
+                    <input type="date" id="dob" name="dob" required>
+                </div>
+                <button type="submit" class="verify-btn">Verify Identity</button>
+            </div>
+        </form>
+        {% if forgot_password %}
+            <a href="{{ url_for('login') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Login
+            </a>
+        {% else %}
+            <a href="{{ url_for('profile') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Profile
+            </a>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          Swal.fire({
+            title: '🛡️ SignVerse ',
+            text: "{{ messages[0] }}",
+            icon: 'info',
+            confirmButtonText: 'Okay'
+          });
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <script src="/static/js/particles.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#d4af37' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#d4af37', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out' }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
+    </script>
+
+    <script>
+        // Radio button functionality to show/hide fields
+        const radios = document.querySelectorAll('input[name="verify_type"]');
+        const fields = {
+            password: document.getElementById('password_field'),
+            contact: document.getElementById('contact_field'),
+            email: document.getElementById('email_field')
+        };
+
+        function showField(type) {
+            // Hide all fields
+            Object.values(fields).forEach(field => {
+                field.style.display = 'none';
+            });
+            // Show selected field
+            if (fields[type]) {
+                fields[type].style.display = 'block';
+            }
+        }
+
+        // Add event listeners to radios
+        radios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                showField(e.target.value);
+            });
+        });
+
+        // Initialize with checked radio
+        const checkedRadio = document.querySelector('input[name="verify_type"]:checked');
+        if (checkedRadio) {
+            showField(checkedRadio.value);
+        }
+    </script>
+</body>
+</html>

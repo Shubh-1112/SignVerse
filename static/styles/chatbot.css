@@ -1,0 +1,419 @@
+/* AI Chatbot Styles */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.chatbot-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    border: none;
+    color: #0a0a0a;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s ease;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+}
+
+.chatbot-toggle:not(:hover) {
+    animation: pulse 2s infinite;
+}
+
+.chatbot-toggle.hidden {
+    display: none;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+    background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+}
+
+.chatbot-toggle:active {
+    transform: scale(0.95);
+}
+
+.chatbot-modal {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    min-width: 280px;
+    max-width: 600px;
+    height: 500px;
+    min-height: 350px;
+    max-height: 80vh;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    resize: both;
+    cursor: auto;
+}
+
+.chatbot-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Resize handles - 8-way resize */
+.chatbot-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Corner resize handles - disabled since we use div elements instead */
+
+/* Top resize handle */
+.top-resize {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    right: 10px;
+    height: 8px;
+    cursor: n-resize;
+    z-index: 2;
+}
+
+.top-resize:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Bottom resize handle */
+.bottom-resize {
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    right: 30px; /* Avoid overlap with corner handle */
+    height: 8px;
+    cursor: s-resize;
+    z-index: 2;
+}
+
+.bottom-resize:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Left resize handle */
+.left-resize {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    bottom: 10px;
+    width: 8px;
+    cursor: w-resize;
+    z-index: 2;
+}
+
+.left-resize:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Right resize handle */
+.right-resize {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    bottom: 30px; /* Avoid overlap with corner handle */
+    width: 8px;
+    cursor: e-resize;
+    z-index: 2;
+}
+
+.right-resize:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Top-left corner resize handle */
+.top-left-resize {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nw-resize;
+    z-index: 2;
+}
+
+.top-left-resize:hover {
+    background: linear-gradient(-45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%),
+                linear-gradient(45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%);
+    background-size: 10px 10px;
+    background-position: 0 0, 10px 10px;
+    background-repeat: no-repeat;
+}
+
+/* Top-right corner resize handle */
+.top-right-resize {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    cursor: ne-resize;
+    z-index: 2;
+}
+
+.top-right-resize:hover {
+    background: linear-gradient(45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%);
+    background-size: 10px 10px;
+    background-position: 0 0, 10px 10px;
+    background-repeat: no-repeat;
+}
+
+/* Bottom-left corner resize handle */
+.bottom-left-resize {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    cursor: sw-resize;
+    z-index: 2;
+}
+
+.bottom-left-resize:hover {
+    background: linear-gradient(45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(212, 175, 55, 0.2) 40%, rgba(212, 175, 55, 0.2) 60%, transparent 60%);
+    background-size: 10px 10px;
+    background-position: 0 0, 10px 10px;
+    background-repeat: no-repeat;
+}
+
+/* Bottom-right corner resize handle (main diagonal pattern) */
+.bottom-right-resize {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nw-resize;
+    background: linear-gradient(-45deg, transparent 40%, rgba(212, 175, 55, 0.3) 40%, rgba(212, 175, 55, 0.3) 60%, transparent 60%),
+                linear-gradient(45deg, transparent 40%, rgba(212, 175, 55, 0.3) 40%, rgba(212, 175, 55, 0.3) 60%, transparent 60%);
+    background-size: 10px 10px;
+    background-position: 0 0, 10px 10px;
+    background-repeat: no-repeat;
+    pointer-events: auto;
+    z-index: 3;
+    border-radius: 0 0 16px 0;
+}
+
+/* Remove the ::after pseudo-element for bottom-right since we have the div */
+.chatbot-modal::after {
+    display: none;
+}
+
+.chatbot-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 500px;
+}
+
+.chatbot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    color: #0a0a0a;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.chatbot-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: #0a0a0a;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.chatbot-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.chatbot-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 400px;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 350px;
+    color: #f5f5f5;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a0a0a;
+    font-size: 14px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.message-content {
+    background: rgba(46, 46, 46, 0.8);
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 250px;
+    word-wrap: break-word;
+}
+
+.message-content p {
+    margin: 0;
+    color: #f5f5f5;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.bot-message .message-content {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.user-message {
+    flex-direction: row-reverse;
+}
+
+.user-message .message-avatar {
+    margin-right: 0;
+    margin-left: 12px;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    color: #0a0a0a;
+}
+
+.chatbot-input-area {
+    display: flex;
+    padding: 16px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(26, 26, 26, 0.9);
+}
+
+#chatbot-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    background: rgba(46, 46, 46, 0.8);
+    color: #f5f5f5;
+    font-size: 14px;
+    outline: none;
+    margin-right: 8px;
+}
+
+#chatbot-input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+#chatbot-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    border: none;
+    color: #0a0a0a;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#chatbot-send:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* Resize states */
+.chatbot-modal.resizing {
+    transition: none;
+    user-select: none;
+}
+
+.chatbot-modal.resizing * {
+    pointer-events: none;
+}
+
+/* Responsive Chatbot */
+@media (max-width: 768px) {
+    .chatbot-modal {
+        width: calc(100vw - 40px);
+        min-width: calc(100vw - 40px);
+        max-width: calc(100vw - 40px);
+        right: 20px;
+        bottom: 80px;
+        max-height: 400px;
+        min-height: 300px;
+    }
+
+    .chatbot-toggle {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+
+    .chatbot-modal::after {
+        display: none; /* Disable resize on mobile */
+    }
+}

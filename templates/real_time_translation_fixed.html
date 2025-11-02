@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Translation - SignVerse</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <link rel="stylesheet" href="/static/styles/components.css">
+    <link rel="stylesheet" href="/static/styles/chatbot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Story+Script&family=Grenze+Gotisch&family=Train+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="/static/styles/real_time_translation_fixed.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h2 class="loading-text">Loading...</h2>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress">
+        <div class="progress-fill"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar glassmorphism" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" style="display:flex; align-items:center;">
+                <a href="/" style="text-decoration:none; color:inherit; display:flex; align-items:center;">
+                    <div class="thunderbolt-logo" style="margin-right: 8px;">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h1 style="margin:0;">SignVerse</h1>
+                </a>
+            </div>
+
+            <div class="nav-actions">
+                <div class="profile-toggle" id="profile-toggle">
+                    <i class="fas fa-user-circle"></i>
+                    <!-- Profile Slider -->
+<div class="profile-slider" id="profile-slider">
+    <div class="slider-content">
+        <a href="/profile" class="slider-link">Profile Detail</a>
+        <a href="/verify_edit" class="slider-link">Edit Profile</a>
+<a href="#" id="logout-button" class="slider-link">Logout</a>
+    </div>
+</div>
+                </div>
+                <div class="nav-toggle" id="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <!-- Menu Slider -->
+            <div class="menu-slider" id="menu-slider">
+                <div class="menu-content">
+<div class="menu-row">
+    <a href="/real_time_translation" class="menu-link">
+                                    <i class="fas fa-sign-language"></i>
+        <span>Real Time Translation</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/learning" class="menu-link">
+        <i class="fas fa-graduation-cap"></i>
+        <span>Interactive Learning</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/video" class="menu-link">
+                                    <i class="fas fa-video"></i>
+        <span>Video Conferencing</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/view_feedback" class="menu-link">
+                                    <i class="fas fa-comments"></i>
+        <span>Feedback</span>
+    </a>
+</div>
+<div class="menu-row">
+    <a href="/about" class="menu-link">
+                                    <i class="fas fa-info-circle"></i>
+        <span>About Us</span>
+    </a>
+</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="translation-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Real-Time Translation</span>
+                <h2 class="section-title scroll-animate">Choose Your Translation Mode</h2>
+                <p class="section-description scroll-animate">
+                    Select the translation direction that suits your needs. Convert text to sign language or interpret sign language into text seamlessly.
+                </p>
+            </div>
+            <div class="translation-cards">
+                <div class="translation-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="card-icon">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <h3>Text-to-Sign</h3>
+                    <p>Convert written text into sign language gestures. Perfect for learning and communication.</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/text-to-sign'">
+                        Start Text-to-Sign
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="translation-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-icon">
+                        <i class="fas fa-sign-language"></i>
+                    </div>
+                    <h3>Sign-to-Text</h3>
+                    <p>Translate sign language gestures into readable text. Enable real-time communication.</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/sign-to-text'">
+                        Start Sign-to-Text
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content scroll-animate">
+                <div class="footer-section">
+                    <h3>SignVerse</h3>
+                    <p>Bridging silence with technology, we work to make conversations limitless.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SignVerse. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot Toggle Button -->
+    <button class="chatbot-toggle hidden" id="chatbot-toggle" aria-label="Open AI Chatbot">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- AI Chatbot Modal -->
+    <div class="chatbot-modal" id="chatbot-modal">
+        <div class="chatbot-container">
+            <div class="chatbot-header">
+                <h3>AI Assistant</h3>
+                <button class="chatbot-close" id="chatbot-close" aria-label="Close chatbot">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chatbot-body" id="chatbot-body">
+                <div class="chatbot-messages" id="chatbot-messages">
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm your AI assistant. How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chatbot-input-area">
+                    <input type="text" id="chatbot-input" placeholder="Type your message..." />
+                    <button id="chatbot-send" aria-label="Send message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/particles.js"></script>
+    <script src="/static/js/animations.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Fix for hideSplineWatermark not defined error
+        function hideSplineWatermark() {
+            // No operation - placeholder to prevent errors
+        }
+
+        // Initialize AOS (Animate On Scroll) for translation cards
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true,
+                    offset: 100
+                });
+            }
+
+            // Force show translation cards if AOS fails
+            setTimeout(function() {
+                const cards = document.querySelectorAll('.translation-card');
+                cards.forEach(function(card, index) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                    card.style.visibility = 'visible';
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

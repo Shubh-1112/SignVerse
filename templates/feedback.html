@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Feedback Dashboard</title>
+    <style>
+        /* CSS Custom Properties for Theme Management */
+        :root {
+            /* Light Mode Colors */
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F8F9FA;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-muted: #9CA3AF;
+            --border-light: #E5E7EB;
+            --border-medium: #D1D5DB;
+            --shadow-light: rgba(0, 0, 0, 0.05);
+            --shadow-medium: rgba(0, 0, 0, 0.1);
+            --shadow-heavy: rgba(0, 0, 0, 0.15);
+            
+            /* Brand Colors */
+            --primary: #3B82F6;
+            --primary-hover: #2563EB;
+            --secondary: #8B5CF6;
+            --accent: #EC4899;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            --gradient-hover: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-normal: 300ms ease-in-out;
+            --transition-slow: 500ms ease-in-out;
+        }
+
+        /* Dark Mode Colors */
+        [data-theme="dark"] {
+            --bg-primary: #0F0F23;
+            --bg-secondary: #1A1A2E;
+            --bg-tertiary: #16213E;
+            --text-primary: #F9FAFB;
+            --text-secondary: #D1D5DB;
+            --text-muted: #9CA3AF;
+            --border-light: #374151;
+            --border-medium: #4B5563;
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-medium: rgba(0, 0, 0, 0.4);
+            --shadow-heavy: rgba(0, 0, 0, 0.5);
+            --gradient-card: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.7));
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Rings */
+        .background-rings {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .ring {
+            position: absolute;
+            border: 2px solid;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .ring:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            border-color: var(--primary);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .ring:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            border-color: var(--secondary);
+            top: 60%;
+            right: 15%;
+            animation-delay: -2s;
+        }
+
+        .ring:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            border-color: var(--accent);
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: -4s;
+        }
+
+        .ring:nth-child(4) {
+            width: 150px;
+            height: 150px;
+            border-color: var(--success);
+            top: 30%;
+            right: 30%;
+            animation-delay: -1s;
+        }
+
+        .ring:nth-child(5) {
+            width: 250px;
+            height: 250px;
+            border-color: var(--warning);
+            bottom: 40%;
+            left: 20%;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg) scale(1);
+                opacity: 0.1;
+            }
+            33% {
+                transform: translateY(-30px) rotate(120deg) scale(1.1);
+                opacity: 0.2;
+            }
+            66% {
+                transform: translateY(15px) rotate(240deg) scale(0.9);
+                opacity: 0.15;
+            }
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Dashboard Header Card */
+        .dashboard-header {
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-xl);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 6px var(--shadow-light), 0 1px 3px var(--shadow-medium);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left var(--transition-slow);
+        }
+
+        .dashboard-header:hover::before {
+            left: 100%;
+        }
+
+        .dashboard-header:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 25px var(--shadow-medium), 0 4px 10px var(--shadow-light);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+        }
+
+        .dashboard-title {
+  font-size: 3rem;
+  font-weight: 700;
+ background: linear-gradient(90deg, #3B82F6, #8B5CF6, #9500c2 ,#00a0d1);
+  background-size: 200% 100%;  /* Large width to enable animation */
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; 
+  animation: waveGradient 8s linear infinite;
+  letter-spacing: 0.05em;
+  user-select: none;
+  font-family: 'New Rocker';
+}
+
+@keyframes waveGradient {
+  0% {
+    background-position: 200% 0;  /* Start with highlight off to the right */
+  }
+  100% {
+    background-position: -200% 0; /* Move highlight across to the left */
+  }
+}
+        .stats-container {
+            display: flex;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            transition: all var(--transition-normal);
+            box-shadow: 0 2px 4px var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform var(--transition-normal);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px var(--shadow-medium);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            background: var(--gradient-hover);
+        }
+
+        .stat-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-content p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 60px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            padding: 2px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+            box-shadow: 0 2px 4px var(--shadow-light);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px var(--shadow-medium);
+        }
+
+        .theme-toggle-handle {
+            width: 28px;
+            height: 28px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 4px var(--shadow-light);
+        }
+
+        [data-theme="dark"] .theme-toggle-handle {
+            transform: translateX(28px);
+        }
+
+        /* Controls Section */
+        .controls {
+            display: flex;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 4px var(--shadow-light);
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        .search-input:hover,.sort-select:hover{
+            border-color: #3B82F6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(15, 98, 231, 0.493);
+        }
+        .search-input, .sort-select {
+            padding: var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all var(--transition-normal);
+            outline: none;
+        }
+
+        .search-input {
+            flex: 1;
+        }
+
+        .search-input:focus, .sort-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .sort-select {
+            min-width: 150px;
+        }
+
+        /* Feedback Grid */
+        .feedback-grid {
+            display: grid;
+            gap: var(--space-lg);
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        /* Customer Feedback Cards */
+        .feedback-card {
+            background: var(--gradient-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-normal);
+            box-shadow: 0 2px 4px var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.6s ease-out both;
+        }
+
+        .feedback-card:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .feedback-card:nth-child(odd) {
+            animation-delay: 0.2s;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform var(--transition-normal);
+        }
+
+        .feedback-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px var(--shadow-medium), 0 4px 10px var(--shadow-light);
+            border-color: var(--primary);
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-xl);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+            position: relative;
+            transition: all var(--transition-normal);
+            box-shadow: 0 4px 8px var(--shadow-light);
+        }
+
+        .user-avatar::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-xl);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .feedback-card:hover .user-avatar::before {
+            opacity: 1;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+        }
+
+        .user-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .user-info .timestamp {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .feedback-content {
+            margin-bottom: var(--space-lg);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+
+        .action-button {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 500;
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 8px var(--shadow-light);
+        }
+
+        .action-button:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .action-button.liked {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            color: var(--success);
+            border-color: var(--success);
+            animation: likeGlow 0.5s ease;
+        }
+
+        .action-button.disliked {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            color: var(--error);
+            border-color: var(--error);
+            animation: dislikeGlow 0.5s ease;
+        }
+
+        @keyframes likeGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        @keyframes dislikeGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(239, 68, 68, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+            }
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow-medium);
+            transition: all var(--transition-normal);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 24px var(--shadow-heavy);
+        }
+
+        .fab:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .fab.active {
+            transform: rotate(45deg);
+            background: var(--error);
+        }
+
+        /* Feedback Form Modal */
+        .feedback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .feedback-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .feedback-form {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px var(--shadow-heavy);
+            border: 1px solid var(--border-light);
+            transform: scale(0.8) translateY(20px);
+            transition: all var(--transition-normal);
+        }
+
+        .feedback-modal.active .feedback-form {
+            transform: scale(1) translateY(0);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all var(--transition-normal);
+            outline: none;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 2px 4px var(--shadow-light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-medium);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--primary);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                padding: var(--space-lg);
+            }
+            
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-md);
+            }
+            
+            .dashboard-title {
+                font-size: 1.75rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .feedback-form {
+                padding: var(--space-lg);
+            }
+            
+            .fab {
+                width: 56px;
+                height: 56px;
+                bottom: var(--space-lg);
+                right: var(--space-lg);
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        button:focus, input:focus, textarea:focus, select:focus {
+            outline: none;
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-light: #000000;
+                --border-medium: #000000;
+                --shadow-light: rgba(0, 0, 0, 0.3);
+                --shadow-medium: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.particles {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s;
+    inset: 0; /* shorthand for top:0; right:0; bottom:0; left:0 */
+}
+
+/* Show particles only on hover */
+.stat-card:hover .particles {
+    opacity: 1;
+}
+
+.stat-card {
+  position: relative; /* important so particles stay inside */
+  overflow: hidden;
+}
+
+.particles-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.feedback-card:hover .particles-canvas {
+  opacity: 1;
+}
+
+/* Flex wrapper for button + toggle */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* spacing between button and toggle */
+}
+
+.dashboard-btn {
+  padding: 10px 24px;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(45deg, #3B82F6, #8B5CF6);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease;
+  user-select: none;
+  will-change: transform, box-shadow;
+}
+
+.dashboard-btn:hover {
+  background: linear-gradient(45deg, #2563EB, #7C3AED);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.6);
+  transform: translateY(-3px) scale(1.05);
+}
+
+.dashboard-btn:active {
+  background: linear-gradient(45deg, #1D4ED8, #6D28D9);
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.4);
+  transform: translateY(-1px) scale(0.98);
+  transition-duration: 100ms;
+}
+
+.page-footer {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.3);
+  color: white;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  gap: var(--space-md);
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.footer-links li a:hover,
+.footer-links li a:focus {
+  color: var(--accent);
+  outline: none;
+}
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 480px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Loading Screen Styles */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-content {
+    text-align: center;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading-spinner {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    margin-bottom: var(--space-lg);
+}
+
+.spinner-ring {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 4px solid transparent;
+    border-top: 4px solid #3B82F6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 var(--space-sm);
+}
+
+.spinner-ring:nth-child(2) {
+    border-top-color: #8B5CF6;
+    animation-delay: 0.1s;
+}
+
+.spinner-ring:nth-child(3) {
+    border-top-color: #9500c2;
+    animation-delay: 0.2s;
+}
+
+.loading-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6, #9500c2, #00a0d1);
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: waveGradient 8s linear infinite;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h2 class="loading-text">Loading...</h2>
+        </div>
+    </div>
+
+    <!-- Animated Background Rings -->
+    <div class="background-rings">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+    </div>
+
+<div class="container">
+    <!-- Dashboard Header Card -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">✨ Feedback Dashboard</h1>
+        <div class="header-content">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 id="total-feedback">{{ stats.total_feedback }}</h3>
+                        <p>Total Feedback</p>
+                    </div>
+                    <div class="particles"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👍</div>
+                    <div class="stat-content">
+                        <h3 id="total-likes">{{ stats.total_likes }}</h3>
+                        <p>Total Likes</p>
+                    </div>
+                    <div class="particles"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👎</div>
+                    <div class="stat-content">
+                        <h3 id="total-dislikes">{{ stats.total_dislikes }}</h3>
+                        <p>Total Dislikes</p>
+                    </div>
+                    <div class="particles"></div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="dashboard-btn" onclick="window.location.href='/'">← Back to Dashboard</button>
+                <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme">
+                    <div class="theme-toggle-handle">🌙</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="controls">
+        <input type="text" class="search-input" id="search-input" placeholder="🔍 Search by name..." aria-label="Search feedback by name">
+        <select class="sort-select" id="sort-select" aria-label="Sort feedback">
+            <option value="newest">⏰ Newest First</option>
+            <option value="oldest">📅 Oldest First</option>
+            <option value="most-likes">🔥 Most Likes</option>
+            <option value="least-likes">📈 Least Likes</option>
+        </select>
+    </div>
+
+    <!-- Feedback Grid (server-rendered fallback shown below but primary rendering happens in JS) -->
+    <div class="feedback-grid" id="feedback-grid" role="main">
+        {% for f in feedbacks %}
+        <div class="feedback-card" data-id="{{ f.id }}">
+            <h3>{{ f.first_name }} {{ f.last_name }}</h3>
+            <p class="feedback-date">{{ f.submitted_at }}</p>
+            <p class="feedback-text">{{ f.feedback }}</p>
+            <div class="feedback-actions">
+                <button type="button" class="action-button like-button" data-id="{{ f.id }}" onclick="reactFeedback('{{ f.id }}','like')">
+                    👍 <span id="like-count-{{ f.id }}">{{ f.likes }}</span>
+                </button>
+                <button type="button" class="action-button dislike-button" data-id="{{ f.id }}" onclick="reactFeedback('{{ f.id }}','dislike')">
+                    👎 <span id="dislike-count-{{ f.id }}">{{ f.dislikes }}</span>
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <p>No feedback yet. Be the first to share!</p>
+        {% endfor %}
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab-button" aria-label="Add new feedback">+</button>
+</div>
+
+<!-- Feedback Form Modal (restored and connected to your JS) -->
+<div class="feedback-modal" id="feedback-modal" role="dialog" aria-labelledby="form-title" aria-hidden="true">
+    <form class="feedback-form" id="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
+        <h2 class="form-title" id="form-title">✨ Submit Your Feedback</h2>
+
+        <div class="form-group">
+            <label class="form-label" for="first_name">First Name</label>
+            <input type="text" class="form-input" id="first_name" name="first_name" placeholder="Enter your first name" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="last_name">Last Name</label>
+            <input type="text" class="form-input" id="last_name" name="last_name" placeholder="Enter your last name">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="feedback">Your Feedback</label>
+            <textarea class="form-textarea" id="feedback" name="feedback" placeholder="Share your thoughts..." required></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-feedback">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="submit-feedback">Submit Feedback</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let feedbackData = JSON.parse('{{ feedbacks | tojson | safe }}');
+
+// DOM ref
+const themeToggle = document.getElementById('theme-toggle');
+const searchInput = document.getElementById('search-input');
+const sortSelect = document.getElementById('sort-select');
+const feedbackGrid = document.getElementById('feedback-grid');
+const fabButton = document.getElementById('fab-button');
+const feedbackModal = document.getElementById('feedback-modal');
+const feedbackForm = document.getElementById('feedback-form');
+const cancelFeedback = document.getElementById('cancel-feedback');
+
+const firstNameInput = document.getElementById('first_name');
+const lastNameInput  = document.getElementById('last_name');
+const feedbackInput  = document.getElementById('feedback');
+
+const totalFeedback = document.getElementById('total-feedback');
+const totalLikes = document.getElementById('total-likes');
+const totalDislikes = document.getElementById('total-dislikes');
+
+// THEME HANDLING (unchanged behavior)
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeToggle(savedTheme);
+}
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeToggle(newTheme);
+}
+function updateThemeToggle(theme) {
+    const handle = themeToggle.querySelector('.theme-toggle-handle');
+    if (handle) handle.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+themeToggle.addEventListener('click', toggleTheme);
+themeToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+    }
+});
+
+// RENDERING
+function renderFeedback() {
+    const searchTerm = (searchInput.value || '').toLowerCase();
+    const sortBy = sortSelect.value;
+
+    // ensure defaults on each item to avoid undefined access
+    feedbackData = feedbackData.map(item => {
+        return {
+            userLiked: item.userLiked || false,
+            userDisliked: item.userDisliked || false,
+            first_name: item.first_name || '',
+            last_name: item.last_name || '',
+            feedback: item.feedback || '',
+            likes: Number(item.likes) || 0,
+            dislikes: Number(item.dislikes) || 0,
+            submitted_at: item.submitted_at || '',
+            id: item.id || null
+        };
+    });
+
+    let filtered = feedbackData.filter(item =>
+        ((item.first_name + ' ' + item.last_name).toLowerCase().includes(searchTerm)) ||
+        (item.feedback || '').toLowerCase().includes(searchTerm)
+    );
+
+    switch (sortBy) {
+        case 'oldest': filtered.sort((a,b) => new Date(a.submitted_at) - new Date(b.submitted_at)); break;
+        case 'most-likes': filtered.sort((a,b) => b.likes - a.likes); break;
+        case 'least-likes': filtered.sort((a,b) => a.likes - b.likes); break;
+        default: filtered.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+    }
+
+    feedbackGrid.innerHTML = '';
+    filtered.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'feedback-card';
+        card.style.animationDelay = (index * 0.08) + 's';
+
+        const initials = (item.first_name ? item.first_name[0] : '') + (item.last_name ? item.last_name[0] : '');
+        const dateText = item.submitted_at ? new Date(item.submitted_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '';
+
+        card.innerHTML = `
+            <canvas class="particles-canvas"></canvas>
+            <div class="feedback-header">
+                <div class="user-avatar">${initials}</div>
+                <div class="user-info">
+                    <h3>${item.first_name} ${item.last_name || ''}</h3>
+                    <div class="timestamp">${dateText}</div>
+                </div>
+            </div>
+            <div class="feedback-content"><p>${item.feedback}</p></div>
+            <div class="feedback-actions">
+                <button type="button" class="action-button like-button ${item.userLiked ? 'liked' : ''}" data-id="${item.id}">
+                    👍 <span>${item.likes}</span>
+                </button>
+                <button type="button" class="action-button dislike-button ${item.userDisliked ? 'disliked' : ''}" data-id="${item.id}">
+                    👎 <span>${item.dislikes}</span>
+                </button>
+            </div>
+        `;
+
+        feedbackGrid.appendChild(card);
+
+        // particle hover — unchanged behavior
+        const canvas = card.querySelector('.particles-canvas');
+        let stopAnimation = null;
+        card.addEventListener('mouseenter', () => {
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            stopAnimation = createTwinkleStarsAnimation(
+                canvas, 0, 0,
+                theme === 'light' ? ['255,215,0','255,105,180','135,206,235','173,216,230','144,238,144'] : ['255,255,255','255,255,224','240,248,255']
+            );
+        });
+        card.addEventListener('mouseleave', () => {
+            if (stopAnimation) stopAnimation();
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+    });
+
+    updateStats(); // update header stats using local data (and after server updates we sync)
+}
+
+
+// LIKE / DISLIKE: delegated handler
+feedbackGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.action-button');
+    if (!btn) return;
+    e.preventDefault();
+
+    const id = parseInt(btn.dataset.id, 10);
+    if (!id && id !== 0) return;
+    const item = feedbackData.find(f => String(f.id) === String(id));
+    if (!item) return;
+
+    const isLike = btn.classList.contains('like-button');
+    const isDislike = btn.classList.contains('dislike-button');
+
+    // Undoing actions: local-only (server doesn't support decrements in current app.py)
+   // inside the delegated handler, where you previously did item.likes++ and fetch('/like_feedback/...')
+if (isLike) {
+    if (item.userLiked) {
+        // undo locally (still optional server-side undo not supported)
+        item.likes = Math.max(0, item.likes - 1);
+        item.userLiked = false;
+        updateCardUI(btn.parentElement, item);
+        updateStats();
+        return;
+    } else {
+        // optimistic update
+        item.likes++;
+        if (item.userDisliked) { item.dislikes = Math.max(0, item.dislikes - 1); item.userDisliked = false; }
+        item.userLiked = true;
+        updateCardUI(btn.parentElement, item);
+
+        // call server route that actually updates DB
+        fetch(`/react_feedback/${id}/like`, { method: 'POST' })
+          .then(res => res.json())
+          .then(data => {
+              if (data && data.success) {
+                  // override local counts with server-truth
+                  item.likes = Number(data.likes || item.likes);
+                  item.dislikes = Number(data.dislikes || item.dislikes);
+                  updateCardUI(btn.parentElement, item);
+                  // update header totals using returned totals
+                  animateCounter(totalFeedback, data.total_feedback || 0);
+                  animateCounter(totalLikes, data.total_likes || 0);
+                  animateCounter(totalDislikes, data.total_dislikes || 0);
+              } else {
+                  // fallback: request full stats sync
+                  syncStatsFromServer();
+              }
+          })
+          .catch(() => { syncStatsFromServer(); });
+        return;
+    }
+} else if (isDislike) {
+    if (item.userDisliked) {
+        item.dislikes = Math.max(0, item.dislikes - 1);
+        item.userDisliked = false;
+        updateCardUI(btn.parentElement, item);
+        updateStats();
+        return;
+    } else {
+        item.dislikes++;
+        if (item.userLiked) { item.likes = Math.max(0, item.likes - 1); item.userLiked = false; }
+        item.userDisliked = true;
+        updateCardUI(btn.parentElement, item);
+
+        fetch(`/react_feedback/${id}/dislike`, { method: 'POST' })
+          .then(res => res.json())
+          .then(data => {
+              if (data && data.success) {
+                  item.likes = Number(data.likes || item.likes);
+                  item.dislikes = Number(data.dislikes || item.dislikes);
+                  updateCardUI(btn.parentElement, item);
+                  animateCounter(totalFeedback, data.total_feedback || 0);
+                  animateCounter(totalLikes, data.total_likes || 0);
+                  animateCounter(totalDislikes, data.total_dislikes || 0);
+              } else {
+                  syncStatsFromServer();
+              }
+          })
+          .catch(() => { syncStatsFromServer(); });
+        return;
+    }
+} 
+});
+
+// small helper to update the like/dislike UI within a card (provided parent is .feedback-actions)
+function updateCardUI(actionsContainer, item) {
+    const likeBtn = actionsContainer.querySelector('.like-button');
+    const dislikeBtn = actionsContainer.querySelector('.dislike-button');
+    if (likeBtn) {
+        likeBtn.classList.toggle('liked', !!item.userLiked);
+        likeBtn.querySelector('span').textContent = item.likes;
+    }
+    if (dislikeBtn) {
+        dislikeBtn.classList.toggle('disliked', !!item.userDisliked);
+        dislikeBtn.querySelector('span').textContent = item.dislikes;
+    }
+}
+
+// SYNC helpers: update header stats from server (if available)
+function syncStatsFromServer() {
+    fetch('{{ url_for("feedback_stats") }}')
+        .then(r => r.json())
+        .then(data => {
+            if (data) {
+                animateCounter(totalFeedback, data.total_feedback);
+                animateCounter(totalLikes, data.total_likes);
+                animateCounter(totalDislikes, data.total_dislikes);
+            }
+        })
+        .catch(() => { /* ignore */ });
+}
+
+// STATS animation utilities (unchanged semantics)
+function animateCounter(element, target, duration = 600) {
+    const start = parseInt(element.textContent) || 0;
+    const diff = target - start;
+    if (diff === 0) { element.textContent = target; return; }
+    const steps = Math.ceil(duration / 16);
+    let currentStep = 0;
+    function step() {
+        currentStep++;
+        const progress = currentStep / steps;
+        element.textContent = start + Math.round(diff * progress);
+        if (currentStep < steps) requestAnimationFrame(step);
+        else element.textContent = target;
+    }
+    requestAnimationFrame(step);
+}
+function updateStats() {
+    const totalFeedbackCount = feedbackData.length;
+    const totalLikesCount = feedbackData.reduce((s, i) => s + Number(i.likes || 0), 0);
+    const totalDislikesCount = feedbackData.reduce((s, i) => s + Number(i.dislikes || 0), 0);
+    animateCounter(totalFeedback, totalFeedbackCount);
+    animateCounter(totalLikes, totalLikesCount);
+    animateCounter(totalDislikes, totalDislikesCount);
+}
+
+// MODAL and Form behavior
+function openModal() {
+    feedbackModal.classList.add('active');
+    feedbackModal.setAttribute('aria-hidden', 'false');
+    fabButton.classList.add('active');
+    firstNameInput.focus();
+    document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+    feedbackModal.classList.remove('active');
+    feedbackModal.setAttribute('aria-hidden', 'true');
+    fabButton.classList.remove('active');
+    document.body.style.overflow = '';
+    clearForm();
+}
+function clearForm() {
+    firstNameInput.value = '';
+    lastNameInput.value = '';
+    feedbackInput.value = '';
+}
+
+function validateForm() {
+    if (!firstNameInput.value.trim()) { alert('First name required'); return false; }
+    if (!feedbackInput.value.trim() || feedbackInput.value.trim().length < 5) { alert('Feedback required (min 5 chars)'); return false; }
+    return true;
+}
+
+// SUBMIT via AJAX with graceful fallback to full page load
+function submitFeedback(e) {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    const submitButton = document.getElementById('submit-feedback');
+    submitButton.classList.add('loading');
+    submitButton.textContent = 'Submitting...';
+
+    const formData = new FormData(feedbackForm);
+
+    fetch(feedbackForm.action, { method: 'POST', body: formData })
+        .then(res => {
+            const ct = res.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+                return res.json().catch(() => null);
+            } else {
+                // server probably redirected or returned HTML — reload page to show server-side result
+                window.location.reload();
+                return null;
+            }
+        })
+        .then(data => {
+            if (data && typeof data === 'object') {
+                // Assume server returns created feedback object when JSON is used.
+                // Normalize fields and add to local array
+                const newItem = {
+                    id: data.id || (Date.now()),
+                    first_name: data.first_name || data.name || firstNameInput.value.trim(),
+                    last_name: data.last_name || '',
+                    feedback: data.feedback || feedbackInput.value.trim(),
+                    likes: Number(data.likes || 0),
+                    dislikes: Number(data.dislikes || 0),
+                    submitted_at: data.submitted_at || new Date().toISOString(),
+                    userLiked: false,
+                    userDisliked: false
+                };
+                feedbackData.unshift(newItem);
+                renderFeedback();
+                closeModal();
+            }
+            submitButton.classList.remove('loading');
+            submitButton.textContent = 'Submit Feedback';
+        })
+        .catch(err => {
+            console.error(err);
+            // fallback to full reload so server flash messages still show if needed
+            window.location.reload();
+        });
+}
+
+// small helper `reactFeedback` used by server-rendered fallback clickable buttons
+// this calls the same client logic as clicking the dynamically rendered buttons
+function reactFeedback(id, type) {
+    fetch(`/react_feedback/${id}/${type}`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`like-count-${id}`).innerText = data.likes;
+                document.getElementById(`dislike-count-${id}`).innerText = data.dislikes;
+                animateCounter(totalFeedback, data.total_feedback || 0);
+                animateCounter(totalLikes, data.total_likes || 0);
+                animateCounter(totalDislikes, data.total_dislikes || 0);
+            }
+        })
+        .catch(err => console.error("Reaction error:", err));
+}
+
+// EVENTS
+fabButton.addEventListener('click', openModal);
+cancelFeedback.addEventListener('click', closeModal);
+feedbackForm.addEventListener('submit', submitFeedback);
+feedbackModal.addEventListener('click', (e) => { if (e.target === feedbackModal) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && feedbackModal.classList.contains('active')) closeModal(); });
+
+let searchTimeout;
+searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(renderFeedback, 300); });
+sortSelect.addEventListener('change', renderFeedback);
+
+// INIT
+function init() { initTheme(); renderFeedback(); }
+init();
+
+// LOADING SCREEN CONTROL
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500); // Match transition duration
+        }
+    }, 1000); // Show loading for at least 1 second
+});
+
+class TwinkleStar {
+  constructor(x, y, radius, speedX, speedY, ctx, cardWidth, cardHeight, color) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.speedX = speedX; // horizontal drift
+    this.speedY = speedY; // vertical fall speed
+    this.ctx = ctx;
+    this.cardWidth = cardWidth;
+    this.cardHeight = cardHeight;
+    this.alpha = Math.random();
+    this.alphaSpeed = 0.01 + Math.random() * 0.02;
+    this.color = color;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    // If fell off bottom, reset to top with new x
+    if (this.y > this.cardHeight + this.radius) {
+      this.y = -this.radius;
+      this.x = Math.random() * this.cardWidth;
+    }
+
+    // Optional: keep x within bounds horizontally (wrap or bounce)
+    if (this.x > this.cardWidth + this.radius) {
+      this.x = -this.radius;
+    } else if (this.x < -this.radius) {
+      this.x = this.cardWidth + this.radius;
+    }
+
+    // Twinkle alpha update
+    this.alpha += this.alphaSpeed;
+    if (this.alpha <= 0 || this.alpha >= 1) this.alphaSpeed *= -1;
+  }
+
+  draw() {
+    const ctx = this.ctx;
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 4);
+    gradient.addColorStop(0, `rgba(${this.color}, ${this.alpha})`);
+    gradient.addColorStop(0.5, `rgba(${this.color}, ${this.alpha * 0.2})`);
+    gradient.addColorStop(1, `rgba(${this.color}, 0)`);
+
+    ctx.beginPath();
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = `rgba(${this.color}, ${this.alpha})`;
+    ctx.shadowBlur = this.radius * 6;
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function createTwinkleStarsAnimation(canvas, velocityX = 0, velocityY = 0, colors = ['255,255,255']) {
+  const ctx = canvas.getContext('2d');
+  const cardWidth = canvas.clientWidth;
+  const cardHeight = canvas.clientHeight;
+  canvas.width = cardWidth;
+  canvas.height = cardHeight;
+
+  const stars = [];
+
+  for (let i = 0; i < 50; i++) {
+  stars.push(new TwinkleStar(
+    Math.random() * canvas.width,
+    Math.random() * canvas.height,
+    1 + Math.random() * 1.5,
+    (Math.random() - 0.5) * 0.2, // small horizontal drift
+    0.5 + Math.random() * 0.2,  // vertical fall speed (no zero!)
+    ctx,
+    canvas.width,
+    canvas.height,
+    colors[Math.floor(Math.random() * colors.length)],
+  ));
+}
+
+  let animationFrameId;
+
+  function animate() {
+    ctx.clearRect(0, 0, cardWidth, cardHeight);
+    stars.forEach(star => {
+      star.update();
+      star.draw();
+    });
+    animationFrameId = requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  return () => cancelAnimationFrame(animationFrameId);
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@3.3.0/tsparticles.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.stat-card .particles').forEach((particlesDiv, idx) => {
+      const id = 'particles-' + idx;
+      particlesDiv.id = id;
+
+      tsParticles.load({
+        id: id,
+        options: {
+          particles: {
+            number: { value: 40 },
+            size: { value: 1 },
+            color: { value: "#3B82F6" },
+            opacity: { value: 0.6 },
+            move: { enable: true, speed: 0.7 }
+          },
+          background: { color: "transparent" }
+        }
+      });
+  });
+});
+</script>
+
+<footer class="page-footer">
+  <div class="footer-container">
+    <p>&copy; 2025 SignVerse. All rights reserved.</p>
+    <ul class="footer-links" role="list">
+      <li><a href="#" aria-label="About us">About</a></li>
+      <li><a href="#" aria-label="Privacy policy">Privacy Policy</a></li>
+      <li><a href="#" aria-label="Contact us">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

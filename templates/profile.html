@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Profile - SignVerse</title>
+    <link rel="stylesheet" href="/static/styles/main.css" />
+    <link rel="stylesheet" href="/static/styles/components.css" />
+    <link rel="stylesheet" href="/static/styles/animations.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            animation: particleFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .profile-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: #f5f5f5;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .profile-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .profile-header h2 {
+            font-family: 'Times New Roman';
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .profile-header p {
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(46, 46, 46, 0.9) 0%, rgba(26, 26, 26, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .info-card:nth-child(1) { animation-delay: 0.4s; }
+        .info-card:nth-child(2) { animation-delay: 0.6s; }
+        .info-card:nth-child(3) { animation-delay: 0.8s; }
+        .info-card:nth-child(4) { animation-delay: 1s; }
+
+        .info-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2), 0 0 30px rgba(212, 175, 55, 0.1);
+            background: linear-gradient(135deg, rgba(46, 46, 46, 1) 0%, rgba(26, 26, 26, 1) 100%);
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .info-card:hover::before {
+            left: 100%;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover .info-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #d4af37;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            color: #f5f5f5;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            background: rgba(212, 175, 55, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .back-link:hover {
+            color: #0a0a0a;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(45deg) translateX(-100%); }
+            100% { transform: rotate(45deg) translateX(100%); }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+            50% { text-shadow: 0 0 40px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3); }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+
+            .profile-header h2 {
+                font-size: 2rem;
+            }
+
+            .info-card {
+                padding: 1.25rem;
+            }
+
+            .info-header {
+                gap: 0.75rem;
+            }
+
+            .info-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .info-value {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h2>Your Profile Details</h2>
+            <p>Review your account information below.</p>
+        </div>
+        <div class="profile-info">
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ user.name }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div>
+                        <div class="info-label">Date of Birth</div>
+                        <div class="info-value">{{ user.date_of_birth.strftime('%Y-%m-%d') if user.date_of_birth else 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="info-label">Contact Number</div>
+                        <div class="info-value">{{ user.contact or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('home') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to Home
+        </a>
+        <div style="text-align:center; margin-top: 2rem;">
+            <a href="{{ url_for('verify_edit') }}" class="back-link" style="padding: 1rem 2rem; font-weight: 700; font-size: 1.1rem;">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          Swal.fire({
+            title: '🛡️ SignVerse ',
+            text: "{{ messages[0] }}",
+            icon: 'info',
+            confirmButtonText: 'Okay'
+          });
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <script src="/static/js/particles.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#d4af37' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#d4af37', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out' }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
